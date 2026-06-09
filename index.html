@@ -1,0 +1,2098 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IGE Banking — Customer Conversion Platform</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#05192D;--navy-2:#0A2540;--navy-3:#0F3460;
+  --teal:#0EA5A0;--teal-lt:#E0F7F6;--teal-mid:#17C3BD;
+  --gold:#F4A942;--gold-lt:#FEF3E2;
+  --rose:#E5384B;--rose-lt:#FEE9EB;
+  --green:#059669;--green-lt:#D1FAE5;
+  --amber:#D97706;--amber-lt:#FEF3C7;
+  --violet:#6D28D9;--violet-lt:#EDE9FE;
+  --slate:#F1F5F9;--border:rgba(5,25,45,.1);--border-2:rgba(5,25,45,.18);
+  --text:#05192D;--text-2:#4B6082;--text-3:#94A3B8;
+  --white:#FFFFFF;--card-bg:#FFFFFF;
+  --r:6px;--r-lg:12px;--r-xl:18px;
+  --sh:0 1px 3px rgba(5,25,45,.07),0 4px 16px rgba(5,25,45,.06);
+  --sh-lg:0 8px 32px rgba(5,25,45,.12);
+  --font:'Sora',sans-serif;--mono:'JetBrains Mono',monospace;
+}
+html{font-size:14px;-webkit-font-smoothing:antialiased}
+body{font-family:var(--font);background:var(--slate);color:var(--text);min-height:100vh;overflow-x:hidden}
+.screen{display:none;min-height:100vh}
+.screen.active{display:block}
+.shell{display:flex;min-height:100vh}
+
+/* SIDEBAR */
+.sidebar{width:220px;flex-shrink:0;background:var(--navy);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto}
+.sb-header{padding:18px 16px 14px;border-bottom:1px solid rgba(255,255,255,.07)}
+.sb-logo{display:flex;align-items:center;gap:9px;margin-bottom:12px}
+.sb-logo-mark{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,var(--teal),#07827E);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sb-brand{font-size:14px;font-weight:700;color:#fff;letter-spacing:-.02em;line-height:1.1}
+.sb-brand-tag{font-size:9px;color:rgba(255,255,255,.3);letter-spacing:.06em;margin-top:1px}
+.sb-bank-pill{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:var(--r);padding:9px 11px;cursor:pointer;transition:background .15s}
+.sb-bank-pill:hover{background:rgba(255,255,255,.09)}
+.sb-bank-name{font-size:12.5px;font-weight:600;color:#fff}
+.sb-bank-sub{font-size:9.5px;color:rgba(255,255,255,.38);margin-top:1px}
+.sb-nav{flex:1;padding:8px 0}
+.sb-section{font-size:8.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.22);padding:12px 16px 4px}
+.sb-item{display:flex;align-items:center;gap:8px;padding:8px 16px;font-size:12px;color:rgba(255,255,255,.48);cursor:pointer;border-left:2px solid transparent;transition:all .14s;user-select:none}
+.sb-item:hover{color:rgba(255,255,255,.82);background:rgba(255,255,255,.05)}
+.sb-item.active{color:#fff;background:rgba(14,165,160,.14);border-left-color:var(--teal)}
+.sb-item svg{width:14px;height:14px;flex-shrink:0;opacity:.7}
+.sb-item.active svg{opacity:1}
+.sb-badge{margin-left:auto;font-size:9px;font-weight:700;padding:1px 6px;border-radius:10px;background:var(--teal);color:#fff}
+.sb-badge.alert{background:var(--rose)}
+.sb-footer{padding:10px 12px;border-top:1px solid rgba(255,255,255,.07)}
+.sb-up{background:linear-gradient(135deg,rgba(14,165,160,.2),rgba(14,165,160,.04));border:1px solid rgba(14,165,160,.28);border-radius:var(--r);padding:10px 11px}
+.sb-up-label{font-size:10.5px;font-weight:700;color:#fff;margin-bottom:2px}
+.sb-up-sub{font-size:9.5px;color:rgba(255,255,255,.38);line-height:1.4;margin-bottom:7px}
+.sb-up-btn{width:100%;padding:6px;background:var(--teal);color:#fff;border:none;border-radius:5px;font-size:10.5px;font-weight:700;cursor:pointer;font-family:var(--font)}
+
+/* MAIN */
+.main{flex:1;display:flex;flex-direction:column;min-width:0;background:var(--slate)}
+.topbar{background:var(--white);border-bottom:1px solid var(--border);padding:0 26px;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:20}
+.topbar-title{font-size:16px;font-weight:700;color:var(--navy);letter-spacing:-.02em}
+.topbar-sub{font-size:10.5px;color:var(--text-3);margin-top:1px}
+.topbar-right{display:flex;align-items:center;gap:9px}
+.page{flex:1;padding:22px 26px}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:5px;padding:7px 15px;border-radius:var(--r);font-size:12px;font-weight:600;cursor:pointer;border:1.5px solid transparent;transition:all .14s;font-family:var(--font);white-space:nowrap}
+.btn-primary{background:var(--teal);color:#fff;border-color:var(--teal)}.btn-primary:hover{background:#0C918D}
+.btn-navy{background:var(--navy);color:#fff}.btn-navy:hover{background:var(--navy-2)}
+.btn-outline{background:transparent;color:var(--text);border-color:var(--border-2)}.btn-outline:hover{background:var(--slate)}
+.btn-ghost{background:transparent;color:var(--text-2);border-color:transparent}.btn-ghost:hover{background:var(--slate)}
+.btn-danger{background:var(--rose);color:#fff;border-color:var(--rose)}
+.btn-green{background:var(--green);color:#fff;border-color:var(--green)}
+.btn-gold{background:var(--gold);color:#fff;border-color:var(--gold)}
+.btn-sm{padding:5px 11px;font-size:11px}
+.btn-lg{padding:11px 22px;font-size:13.5px}
+
+/* CARDS */
+.card{background:var(--card-bg);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden;box-shadow:var(--sh)}
+.card-p{padding:16px 18px}
+.card-head{padding:12px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.card-title{font-size:13px;font-weight:700;color:var(--navy);letter-spacing:-.01em}
+.card-sub{font-size:10.5px;color:var(--text-3);margin-top:1px}
+
+/* KPI */
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
+.kpi{background:var(--card-bg);border:1px solid var(--border);border-radius:var(--r-lg);padding:14px 16px;position:relative;overflow:hidden;box-shadow:var(--sh)}
+.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--kpi-color,var(--teal))}
+.kpi-label{font-size:9.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text-3);margin-bottom:5px}
+.kpi-val{font-size:26px;font-weight:800;color:var(--navy);letter-spacing:-.03em;line-height:1.1;margin-bottom:3px}
+.kpi-delta{font-size:11px}.kpi-delta.up{color:var(--green)}.kpi-delta.down{color:var(--rose)}.kpi-delta.warn{color:var(--amber)}
+
+/* BADGES */
+.badge{display:inline-flex;align-items:center;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px}
+.b-teal{background:var(--teal-lt);color:#076360}.b-green{background:var(--green-lt);color:#065F46}
+.b-rose{background:var(--rose-lt);color:#991B1B}.b-gold{background:var(--gold-lt);color:#92400E}
+.b-violet{background:var(--violet-lt);color:#4C1D95}.b-amber{background:var(--amber-lt);color:#92400E}
+.b-navy{background:rgba(5,25,45,.08);color:var(--navy-2)}.b-slate{background:var(--slate);color:var(--text-2)}
+
+/* TABLE */
+.tbl{width:100%;border-collapse:collapse;font-size:12px}
+.tbl th{text-align:left;font-size:9.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--text-3);padding:8px 12px;border-bottom:1px solid var(--border);background:var(--slate)}
+.tbl td{padding:10px 12px;border-bottom:1px solid var(--border);vertical-align:middle}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tr:hover td{background:rgba(241,245,249,.6);cursor:pointer}
+.tbl-name{font-weight:600;color:var(--navy)}.tbl-sub{font-size:10px;color:var(--text-3);margin-top:2px}
+
+/* PROGRESS */
+.prog-track{height:5px;background:var(--slate);border-radius:3px;overflow:hidden}
+.prog-fill{height:100%;border-radius:3px;transition:width .3s}
+
+/* GRIDS */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.g-main-side{display:grid;grid-template-columns:1fr 300px;gap:14px;align-items:start}
+
+/* FORMS */
+label,.field-label{display:block;font-size:11px;font-weight:600;color:var(--text-2);margin-bottom:4px}
+input[type=text],input[type=email],input[type=tel],input[type=number],input[type=date],select,textarea{width:100%;padding:8px 11px;border:1.5px solid var(--border-2);border-radius:var(--r);font-size:12.5px;font-family:var(--font);color:var(--text);background:#fff;outline:none;transition:all .14s}
+input:focus,select:focus,textarea:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(14,165,160,.1)}
+.field-group{margin-bottom:12px}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+.required{color:var(--rose)}
+
+/* MISC */
+.feed-item{display:flex;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)}
+.feed-item:last-child{border-bottom:none}
+.feed-dot{width:7px;height:7px;border-radius:50%;margin-top:4px;flex-shrink:0}
+.feed-text{font-size:11.5px;color:var(--text-2);line-height:1.5}
+.feed-time{font-size:10px;color:var(--text-3);margin-top:2px}
+.feed-bold{font-weight:600;color:var(--navy)}
+.stat-row{display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--border)}
+.stat-row:last-child{border-bottom:none}
+.stat-key{font-size:11.5px;color:var(--text-2)}.stat-val{font-size:12px;font-weight:700;color:var(--navy)}
+.funnel-row{margin-bottom:10px}
+.funnel-meta{display:flex;justify-content:space-between;margin-bottom:3px}
+.funnel-name{font-size:11.5px;color:var(--text-2)}.funnel-count{font-size:11.5px;font-weight:700;color:var(--navy)}
+.gap-alert{background:var(--rose-lt);border:1px solid rgba(229,56,75,.2);border-left:3px solid var(--rose);border-radius:var(--r);padding:9px 13px;font-size:11.5px;color:#991B1B;line-height:1.55}
+.ige-sol{background:var(--teal-lt);border:1px solid rgba(14,165,160,.2);border-left:3px solid var(--teal);border-radius:var(--r);padding:9px 13px;font-size:11.5px;color:#076360;line-height:1.55}
+.avatar{width:30px;height:30px;border-radius:50%;background:var(--teal);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.action-row{display:flex;align-items:center;gap:11px;padding:9px 0;border-bottom:1px solid var(--border)}
+.action-row:last-child{border-bottom:none}
+.action-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.action-info{flex:1}
+.action-title{font-size:12.5px;font-weight:600;color:var(--navy)}
+.action-sub{font-size:10.5px;color:var(--text-3)}
+.tag-pill{display:inline-block;font-size:9.5px;font-weight:700;padding:2px 7px;border-radius:10px;border:1px solid}
+.t-rev{background:var(--green-lt);color:#065F46;border-color:rgba(5,150,105,.25)}
+.t-comp{background:var(--amber-lt);color:#92400E;border-color:rgba(217,119,6,.25)}
+.t-acq{background:var(--slate);color:var(--text-2);border-color:var(--border-2)}
+
+/* PIPELINE */
+.pipeline{display:flex;align-items:center;gap:0}
+.pipe-step{flex:1;text-align:center;position:relative}
+.pipe-step:not(:last-child)::after{content:'';position:absolute;top:17px;left:calc(50% + 20px);width:calc(100% - 40px);height:2px;background:var(--border);z-index:0}
+.pipe-step.done:not(:last-child)::after{background:var(--teal)}
+.pipe-circle{width:34px;height:34px;border-radius:50%;margin:0 auto 7px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;position:relative;z-index:1}
+.pipe-step.done .pipe-circle{background:var(--teal);color:#fff}
+.pipe-step.active .pipe-circle{background:var(--navy);color:#fff;box-shadow:0 0 0 4px rgba(14,165,160,.2)}
+.pipe-step.pending .pipe-circle{background:var(--slate);color:var(--text-3);border:1.5px solid var(--border-2)}
+.pipe-label{font-size:9.5px;font-weight:600;color:var(--text-3)}.pipe-step.done .pipe-label{color:var(--teal)}.pipe-step.active .pipe-label{color:var(--navy)}
+.pipe-count{font-size:9px;color:var(--text-3);margin-top:1px}
+
+/* WA PREVIEW */
+.wa-frame{background:#E5DDD5;border-radius:14px;overflow:hidden;box-shadow:var(--sh-lg)}
+.wa-topbar-ui{background:#075E54;padding:10px 12px;display:flex;align-items:center;gap:9px}
+.wa-avatar-sm{width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0}
+.wa-name-sm{font-size:12.5px;font-weight:600;color:#fff}.wa-status-sm{font-size:10px;color:rgba(255,255,255,.6)}
+.wa-body{padding:10px 8px;display:flex;flex-direction:column;gap:7px}
+.wa-bubble{max-width:86%;padding:7px 10px 4px;border-radius:7px;position:relative}
+.wa-bubble.bot{background:#fff;align-self:flex-start;border-top-left-radius:2px;box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.wa-bubble.user{background:#DCF8C6;align-self:flex-end;border-top-right-radius:2px;box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.wa-text{font-size:12px;line-height:1.5;color:#111;white-space:pre-line}
+.wa-meta{font-size:9px;color:#8696A0;text-align:right;margin-top:3px;display:flex;align-items:center;justify-content:flex-end;gap:2px}
+.wa-tick{color:#53BDEB;font-size:10px}
+.wa-qr-btns{border-top:1px solid rgba(0,0,0,.07);margin-top:5px;display:flex;flex-direction:column;gap:0}
+.wa-qr-btn{display:block;width:100%;text-align:center;padding:7px 10px;font-size:11.5px;font-weight:500;color:#075E54;cursor:pointer;border:none;background:transparent;font-family:var(--font);border-bottom:1px solid rgba(0,0,0,.05);transition:background .1s}
+.wa-qr-btn:last-child{border-bottom:none}.wa-qr-btn:hover{background:rgba(7,94,84,.05)}
+
+/* STEPS */
+.steps{display:flex;align-items:flex-start;gap:0;margin-bottom:16px}
+.step-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;position:relative}
+.step-item:not(:last-child)::after{content:'';position:absolute;top:13px;left:50%;width:100%;height:1px;background:var(--border);z-index:0}
+.step-item.done:not(:last-child)::after{background:var(--teal)}
+.step-circle{width:26px;height:26px;border-radius:50%;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;position:relative;z-index:1}
+.step-item.done .step-circle{background:var(--teal);color:#fff}
+.step-item.active .step-circle{background:var(--navy);color:#fff}
+.step-item.todo .step-circle{background:var(--slate);color:var(--text-3);border:1px solid var(--border-2)}
+.step-label{font-size:9.5px;font-weight:600;color:var(--text-3);text-align:center;line-height:1.3}
+.step-item.active .step-label{color:var(--navy)}.step-item.done .step-label{color:var(--teal)}
+
+/* TOAST / MODAL */
+.toast-wrap{position:fixed;bottom:18px;right:18px;z-index:9999;display:flex;flex-direction:column;gap:7px;pointer-events:none}
+.toast{background:var(--navy);color:#fff;border-radius:var(--r);padding:9px 15px;font-size:12px;font-weight:500;box-shadow:var(--sh-lg);pointer-events:all;animation:tIn .2s ease-out}
+@keyframes tIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.modal-overlay{position:fixed;inset:0;z-index:800;background:rgba(5,25,45,.5);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;padding:18px}
+.modal-box{background:#fff;border-radius:var(--r-xl);width:520px;max-height:88vh;overflow-y:auto;box-shadow:0 24px 60px rgba(0,0,0,.2)}
+.modal-head{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.modal-title{font-size:15px;font-weight:700;color:var(--navy);letter-spacing:-.01em}
+.modal-close{background:none;border:none;font-size:20px;cursor:pointer;color:var(--text-3);line-height:1}
+.modal-body{padding:18px 20px}
+.modal-foot{padding:12px 20px;border-top:1px solid var(--border);display:flex;gap:9px;justify-content:flex-end}
+.mb8{margin-bottom:8px}.mb12{margin-bottom:12px}.mb16{margin-bottom:16px}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════
+     SHARED SIDEBAR TEMPLATE (hidden)
+═══════════════════════════════════════════ -->
+<div id="sidebar-tpl" style="display:none">
+  <div class="sb-header">
+    <div class="sb-logo">
+      <div class="sb-logo-mark">
+        <svg viewBox="0 0 20 20" fill="none" width="18" height="18">
+          <path d="M10 2l2.2 4.5H18l-4.4 3.2 1.7 5.3L10 12l-5.3 3 1.7-5.3L2 6.5h5.8L10 2z" fill="#fff"/>
+        </svg>
+      </div>
+      <div>
+        <div class="sb-brand">IGE Banking</div>
+        <div class="sb-brand-tag">CONVERSION PLATFORM</div>
+      </div>
+    </div>
+    <div class="sb-bank-pill" onclick="switchInstitution()">
+      <div class="sb-bank-name">United Bank for Africa</div>
+      <div class="sb-bank-sub">Enterprise · 32M customers</div>
+    </div>
+  </div>
+  <nav class="sb-nav">
+    <div class="sb-section">Overview</div>
+    <div class="sb-item" data-screen="dashboard">
+      <svg viewBox="0 0 16 16" fill="none"><rect x="1.5" y="1.5" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.4"/><rect x="9.5" y="1.5" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.4"/><rect x="1.5" y="9.5" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.4"/><rect x="9.5" y="9.5" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.4"/></svg>
+      Command Centre
+    </div>
+    <div class="sb-section">Acquisition</div>
+    <div class="sb-item" data-screen="leads">
+      <svg viewBox="0 0 16 16" fill="none"><circle cx="6" cy="5" r="3" stroke="currentColor" stroke-width="1.4"/><path d="M1 14c0-3 2-5 5-5s5 2 5 5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M13 7v4M11 9h4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      Lead Capture <span class="sb-badge">2,841</span>
+    </div>
+    <div class="sb-item" data-screen="campaigns">
+      <svg viewBox="0 0 16 16" fill="none"><path d="M2 4l6-2 6 2v5c0 3-6 5-6 5S2 12 2 9V4z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>
+      Campaigns <span class="sb-badge">12</span>
+    </div>
+    <div class="sb-section">Conversion</div>
+    <div class="sb-item" data-screen="whatsapp">
+      <svg viewBox="0 0 16 16" fill="none"><path d="M2 3h12v9H9l-3 2v-2H2V3z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>
+      WhatsApp Flows
+    </div>
+    <div class="sb-item" data-screen="branches">
+      <svg viewBox="0 0 16 16" fill="none"><path d="M8 1L2 5v9h4V9h4v5h4V5L8 1z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>
+      Branch Routing <span class="sb-badge alert">14!</span>
+    </div>
+    <div class="sb-section">Retention</div>
+    <div class="sb-item" data-screen="dormant">
+      <svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.4"/><path d="M8 5v3.5L10.5 10" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      Dormant Reactivation <span class="sb-badge alert">4.2K</span>
+    </div>
+    <div class="sb-item" data-screen="kyc">
+      <svg viewBox="0 0 16 16" fill="none"><path d="M13 3H3a1 1 0 00-1 1v8a1 1 0 001 1h10a1 1 0 001-1V4a1 1 0 00-1-1z" stroke="currentColor" stroke-width="1.4"/><path d="M5 7h4M5 10h2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      KYC Compliance
+    </div>
+    <div class="sb-section">Intelligence</div>
+    <div class="sb-item" data-screen="analytics">
+      <svg viewBox="0 0 16 16" fill="none"><path d="M2 12V4l3.5 4L8 3l2.5 5L14 4v8H2z" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Analytics & ROI
+    </div>
+    <div class="sb-item" data-screen="segments">
+      <svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="5.5" stroke="currentColor" stroke-width="1.4"/><path d="M8 2.5V8L12 12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      Customer Segments
+    </div>
+  </nav>
+  <div class="sb-footer">
+    <div class="sb-up">
+      <div class="sb-up-label">Upgrade to Enterprise+</div>
+      <div class="sb-up-sub">AI churn prediction · webhooks · white-label</div>
+      <button class="sb-up-btn" onclick="openUpgrade()">Upgrade plan →</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════
+     SCREEN 1 — COMMAND CENTRE
+═══════════════════════════════════════════ -->
+<div id="s-dashboard" class="screen active">
+<div class="shell">
+<aside class="sidebar" data-sb></aside>
+<div class="main">
+  <div class="topbar">
+    <div><div class="topbar-title">Command Centre</div><div class="topbar-sub">UBA Nigeria · Live · Updated 2 min ago</div></div>
+    <div class="topbar-right">
+      <span class="badge b-teal" style="font-size:11px;padding:4px 11px">● Live</span>
+      <button class="btn btn-outline btn-sm" onclick="exportReport()">Export</button>
+      <button class="btn btn-primary btn-sm" onclick="showModal('modal-campaign')">+ New Campaign</button>
+      <div class="avatar">AD</div>
+    </div>
+  </div>
+  <div class="page">
+    <div class="kpi-grid">
+      <div class="kpi" style="--kpi-color:var(--teal)"><div class="kpi-label">Total leads captured</div><div class="kpi-val">48,292</div><div class="kpi-delta up">↑ 2,841 this week</div></div>
+      <div class="kpi" style="--kpi-color:var(--green)"><div class="kpi-label">Conversions MTD</div><div class="kpi-val">9,641</div><div class="kpi-delta up">↑ 19.9% conversion rate</div></div>
+      <div class="kpi" style="--kpi-color:var(--rose)"><div class="kpi-label">Revenue recovered</div><div class="kpi-val">₦4.8B</div><div class="kpi-delta up">↑ Dormant reactivation</div></div>
+      <div class="kpi" style="--kpi-color:var(--gold)"><div class="kpi-label">Avg campaign CAC</div><div class="kpi-val">₦1,240</div><div class="kpi-delta up">↓ from ₦15,000 media</div></div>
+    </div>
+    <div class="g2 mb16">
+      <div class="card">
+        <div class="card-head"><div><div class="card-title">Active campaigns</div><div class="card-sub">12 running · 3 draft</div></div><button class="btn btn-ghost btn-sm" onclick="go('campaigns')">View all</button></div>
+        <div style="overflow-x:auto"><table class="tbl"><thead><tr><th>Campaign</th><th>Use case</th><th>Leads</th><th>Conv %</th><th>Status</th></tr></thead><tbody>
+          <tr onclick="go('whatsapp')"><td><div class="tbl-name">Debit Card Push — May</div><div class="tbl-sub">Started May 1</div></td><td><span class="tag-pill t-rev">Card Activation</span></td><td><b>22,100</b></td><td style="color:var(--green);font-weight:700">22.4%</td><td><span class="badge b-green">Live</span></td></tr>
+          <tr onclick="go('dormant')"><td><div class="tbl-name">Dormant Win-Back Q2</div><div class="tbl-sub">Started Apr 15</div></td><td><span class="tag-pill t-comp">Reactivation</span></td><td><b>18,400</b></td><td style="color:var(--green);font-weight:700">38.1%</td><td><span class="badge b-green">Live</span></td></tr>
+          <tr onclick="go('kyc')"><td><div class="tbl-name">KYC Compliance Drive</div><div class="tbl-sub">CBN deadline Jun 30</div></td><td><span class="tag-pill t-comp">Compliance</span></td><td><b>91,200</b></td><td style="color:var(--amber);font-weight:700">61.2%</td><td><span class="badge b-gold">Urgent</span></td></tr>
+          <tr onclick="go('campaigns')"><td><div class="tbl-name">Salary Account — SME</div><div class="tbl-sub">Started Apr 28</div></td><td><span class="tag-pill t-acq">Acquisition</span></td><td><b>5,840</b></td><td style="color:var(--teal);font-weight:700">14.7%</td><td><span class="badge b-teal">Live</span></td></tr>
+        </tbody></table></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><div class="card-title">Pending actions</div><span style="font-size:11px;font-weight:700;color:var(--rose)">6 require attention</span></div>
+        <div class="card-p">
+          <div class="action-row"><div class="action-dot" style="background:var(--rose)"></div><div class="action-info"><div class="action-title">14 branch leads awaiting routing</div><div class="action-sub">Victoria Island · Ikeja · Lekki · +11 branches</div></div><button class="btn btn-outline btn-sm" onclick="go('branches')">Route</button></div>
+          <div class="action-row"><div class="action-dot" style="background:var(--amber)"></div><div class="action-info"><div class="action-title">4,218 dormant accounts — urgent</div><div class="action-sub">90d+ inactive · ₦24.8B at-risk deposits</div></div><button class="btn btn-outline btn-sm" onclick="go('dormant')">Launch</button></div>
+          <div class="action-row"><div class="action-dot" style="background:var(--gold)"></div><div class="action-info"><div class="action-title">KYC — 35,448 customers incomplete</div><div class="action-sub">CBN deadline in 46 days. Send reminder sequence.</div></div><button class="btn btn-primary btn-sm" onclick="go('kyc')">Act now</button></div>
+          <div class="action-row"><div class="action-dot" style="background:var(--violet)"></div><div class="action-info"><div class="action-title">Reward wallet — ₦2.4M remaining</div><div class="action-sub">At current rate, exhausted in 4 days</div></div><button class="btn btn-outline btn-sm" onclick="openWalletTopup()">Top up</button></div>
+          <div class="action-row"><div class="action-dot" style="background:var(--teal)"></div><div class="action-info"><div class="action-title">3 campaigns ready to approve</div><div class="action-sub">Drafted by team · awaiting sign-off</div></div><button class="btn btn-outline btn-sm" onclick="go('campaigns')">Review</button></div>
+          <div class="action-row"><div class="action-dot" style="background:var(--navy)"></div><div class="action-info"><div class="action-title">April ROI report ready</div><div class="action-sub">₦142M cost · ₦5.03B net value delivered</div></div><button class="btn btn-ghost btn-sm" onclick="go('analytics')">View</button></div>
+        </div>
+      </div>
+    </div>
+    <div class="card mb16">
+      <div class="card-head"><div><div class="card-title">Platform conversion funnel — May 2026</div><div class="card-sub">All active campaigns · 48,292 total leads</div></div><button class="btn btn-ghost btn-sm" onclick="go('analytics')">Full analytics</button></div>
+      <div class="card-p">
+        <div class="funnel-row"><div class="funnel-meta"><span class="funnel-name">Ad / media → WhatsApp tap</span><span class="funnel-count">48,292</span></div><div class="prog-track"><div class="prog-fill" style="width:100%;background:var(--navy)"></div></div></div>
+        <div class="funnel-row"><div class="funnel-meta"><span class="funnel-name">Qualified lead (intent confirmed)</span><span class="funnel-count">31,840 (65.9%)</span></div><div class="prog-track"><div class="prog-fill" style="width:65.9%;background:var(--navy-3)"></div></div></div>
+        <div class="funnel-row"><div class="funnel-meta"><span class="funnel-name">Branch routed / mobile flow initiated</span><span class="funnel-count">22,100 (45.8%)</span></div><div class="prog-track"><div class="prog-fill" style="width:45.8%;background:var(--teal)"></div></div></div>
+        <div class="funnel-row"><div class="funnel-meta"><span class="funnel-name">Reward claimed (incentive triggered)</span><span class="funnel-count">18,240 (37.7%)</span></div><div class="prog-track"><div class="prog-fill" style="width:37.7%;background:var(--gold)"></div></div></div>
+        <div class="funnel-row" style="margin:0"><div class="funnel-meta"><span class="funnel-name">Conversion confirmed (product activated)</span><span class="funnel-count" style="color:var(--green)">9,641 (19.9%)</span></div><div class="prog-track"><div class="prog-fill" style="width:19.9%;background:var(--green)"></div></div></div>
+      </div>
+    </div>
+    <div class="g2">
+      <div class="card">
+        <div class="card-head"><div class="card-title">Live activity feed</div></div>
+        <div class="card-p" style="max-height:240px;overflow-y:auto">
+          <div class="feed-item"><div class="feed-dot" style="background:var(--teal)"></div><div><div class="feed-text"><span class="feed-bold">Chidi Okafor</span> confirmed branch appt — UBA Victoria Island (Debit Card)</div><div class="feed-time">Just now</div></div></div>
+          <div class="feed-item"><div class="feed-dot" style="background:var(--green)"></div><div><div class="feed-text"><span class="feed-bold">₦500 airtime</span> reward issued to 84 customers in the last hour</div><div class="feed-time">4 min ago</div></div></div>
+          <div class="feed-item"><div class="feed-dot" style="background:var(--rose)"></div><div><div class="feed-text"><span class="feed-bold">Fatima Bello</span> flagged as churn risk — dormant 88 days (₦2.1M balance)</div><div class="feed-time">11 min ago</div></div></div>
+          <div class="feed-item"><div class="feed-dot" style="background:var(--teal)"></div><div><div class="feed-text"><span class="feed-bold">KYC update</span> completed by 2,441 customers via WhatsApp self-service today</div><div class="feed-time">18 min ago</div></div></div>
+          <div class="feed-item"><div class="feed-dot" style="background:var(--gold)"></div><div><div class="feed-text"><span class="feed-bold">Dormant win-back</span> sent to 8,200 customers. 38% opened within 1 hour.</div><div class="feed-time">34 min ago</div></div></div>
+          <div class="feed-item"><div class="feed-dot" style="background:var(--violet)"></div><div><div class="feed-text"><span class="feed-bold">Salary account</span> campaign — 28 new accounts opened via WhatsApp self-enrol</div><div class="feed-time">1hr ago</div></div></div>
+          <div class="feed-item"><div class="feed-dot" style="background:var(--teal)"></div><div><div class="feed-text"><span class="feed-bold">Ikeja branch</span> — 91% of IGE-referred customers converted on first visit today</div><div class="feed-time">2hr ago</div></div></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head"><div class="card-title">Revenue attribution — May</div><div class="card-sub">IGE value delivered to UBA</div></div>
+        <div class="card-p">
+          <div class="stat-row"><span class="stat-key">Debit card activation revenue</span><span class="stat-val" style="color:var(--teal)">₦48M</span></div>
+          <div class="stat-row"><span class="stat-key">Dormant account recovery</span><span class="stat-val" style="color:var(--teal)">₦4.8B</span></div>
+          <div class="stat-row"><span class="stat-key">New salary accounts (float income)</span><span class="stat-val" style="color:var(--teal)">₦84M</span></div>
+          <div class="stat-row"><span class="stat-key">KYC compliance fines avoided</span><span class="stat-val" style="color:var(--green)">₦240M</span></div>
+          <div class="stat-row"><span class="stat-key">IGE platform cost (all fees)</span><span class="stat-val" style="color:var(--rose)">−₦142M</span></div>
+          <div class="stat-row" style="border-top:2px solid var(--navy);margin-top:4px;padding-top:9px"><span style="font-weight:700;color:var(--navy)">Net value delivered</span><span style="font-size:15px;font-weight:800;color:var(--green)">+₦5.03B</span></div>
+          <div style="font-size:10px;color:var(--text-3);margin-top:6px">35.4:1 ROI on IGE platform cost this month</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════
+     SCREEN 2 — LEAD CAPTURE
+═══════════════════════════════════════════ -->
+<div id="s-leads" class="screen">
+<div class="shell">
+<aside class="sidebar" data-sb></aside>
+<div class="main">
+  <div class="topbar">
+    <div><div class="topbar-title">Lead Capture</div><div class="topbar-sub">2,841 new leads this week · all campaigns combined</div></div>
+    <div class="topbar-right">
+      <button class="btn btn-outline btn-sm" onclick="exportLeadsCSV()">Export CSV</button>
+      <button class="btn btn-primary btn-sm" onclick="showModal('modal-lead')">+ Manual entry</button>
+    </div>
+  </div>
+  <div class="page">
+    <div class="card mb16">
+      <div class="card-head"><div class="card-title">Lead pipeline — today</div></div>
+      <div class="card-p">
+        <div class="pipeline">
+          <div class="pipe-step done"><div class="pipe-circle">✓</div><div class="pipe-label">Captured</div><div class="pipe-count">2,841 leads</div></div>
+          <div class="pipe-step done"><div class="pipe-circle">✓</div><div class="pipe-label">Qualified</div><div class="pipe-count">1,974 (69%)</div></div>
+          <div class="pipe-step active"><div class="pipe-circle">3</div><div class="pipe-label">Routed</div><div class="pipe-count">1,210 (43%)</div></div>
+          <div class="pipe-step pending"><div class="pipe-circle">4</div><div class="pipe-label">Incentivised</div><div class="pipe-count">840 (30%)</div></div>
+          <div class="pipe-step pending"><div class="pipe-circle">5</div><div class="pipe-label">Converted</div><div class="pipe-count">488 (17%)</div></div>
+          <div class="pipe-step pending"><div class="pipe-circle">6</div><div class="pipe-label">Attributed</div><div class="pipe-count">—</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="g-main-side">
+      <div class="card">
+        <div class="card-head"><div class="card-title">All leads</div>
+          <div style="display:flex;gap:7px">
+            <select style="width:150px;font-size:11.5px" onchange="applyFilter(this)"><option>All campaigns</option><option>Debit Card Push</option><option>Dormant Win-Back</option><option>KYC Compliance</option><option>Salary Account</option></select>
+            <select style="width:120px;font-size:11.5px"><option>All statuses</option><option>New</option><option>Qualified</option><option>Routed</option><option>Converted</option></select>
+          </div>
+        </div>
+        <div style="overflow-x:auto"><table class="tbl"><thead><tr><th>Customer</th><th>Campaign</th><th>Captured</th><th>Intent</th><th>Stage</th><th>Branch</th><th></th></tr></thead><tbody>
+          <tr onclick="openLeadProfile('Chidi Okafor','Debit Card','Routed','Victoria Island')">
+            <td><div class="tbl-name">Chidi Okafor</div><div class="tbl-sub">08012345678 · Lagos</div></td>
+            <td><span class="tag-pill t-rev">Debit Card</span></td>
+            <td style="color:var(--text-3)">Today 09:42</td><td><span class="badge b-green">High</span></td>
+            <td><span class="badge b-teal">Routed</span></td><td style="font-size:11px">Victoria Island</td>
+            <td><button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();openWhatsAppChat('Chidi Okafor','08012345678')">Chat</button></td>
+          </tr>
+          <tr onclick="openLeadProfile('Ngozi Adeyemi','KYC Update','Pending','Wuse II, Abuja')">
+            <td><div class="tbl-name">Ngozi Adeyemi</div><div class="tbl-sub">08023456789 · Abuja</div></td>
+            <td><span class="tag-pill t-comp">KYC Update</span></td>
+            <td style="color:var(--text-3)">Today 09:18</td><td><span class="badge b-gold">Medium</span></td>
+            <td><span class="badge b-gold">Pending</span></td><td style="font-size:11px">Wuse II, Abuja</td>
+            <td><button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();sendReminder('Ngozi Adeyemi','KYC Update')">Remind</button></td>
+          </tr>
+          <tr onclick="openLeadProfile('Emeka Eze','Dormant','Converted','GRA Port Harcourt')">
+            <td><div class="tbl-name">Emeka Eze</div><div class="tbl-sub">08034567890 · PH</div></td>
+            <td><span class="tag-pill t-comp">Dormant</span></td>
+            <td style="color:var(--text-3)">Today 08:55</td><td><span class="badge b-green">High</span></td>
+            <td><span class="badge b-green">Converted</span></td><td style="font-size:11px">GRA Port Harcourt</td>
+            <td><button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();issueReward('Emeka Eze','₦500 airtime')">Done ✓</button></td>
+          </tr>
+          <tr onclick="openLeadProfile('Fatima Bello','Salary Account','New','Sabon Gari, Kano')">
+            <td><div class="tbl-name">Fatima Bello</div><div class="tbl-sub">09011234567 · Kano</div></td>
+            <td><span class="tag-pill t-acq">Salary Account</span></td>
+            <td style="color:var(--text-3)">Today 08:31</td><td><span class="badge b-rose">Low</span></td>
+            <td><span class="badge b-slate">New</span></td><td style="font-size:11px">Sabon Gari, Kano</td>
+            <td><button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();sendReminder('Fatima Bello','Salary Account')">Follow-up</button></td>
+          </tr>
+          <tr onclick="openLeadProfile('Tunde Adeyinka','Debit Card','Routed','Ikeja Branch')">
+            <td><div class="tbl-name">Tunde Adeyinka</div><div class="tbl-sub">08087654321 · Lagos</div></td>
+            <td><span class="tag-pill t-rev">Debit Card</span></td>
+            <td style="color:var(--text-3)">Today 08:14</td><td><span class="badge b-green">High</span></td>
+            <td><span class="badge b-teal">Routed</span></td><td style="font-size:11px">Ikeja Branch</td>
+            <td><button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();openWhatsAppChat('Tunde Adeyinka','08087654321')">Chat</button></td>
+          </tr>
+        </tbody></table></div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div class="card card-p">
+          <div class="card-title mb12">Lead sources today</div>
+          <div class="stat-row"><span class="stat-key">WhatsApp tap (ad CTA)</span><span class="stat-val">1,841</span></div>
+          <div class="stat-row"><span class="stat-key">QR code scan</span><span class="stat-val">584</span></div>
+          <div class="stat-row"><span class="stat-key">USSD *8011*44#</span><span class="stat-val">284</span></div>
+          <div class="stat-row"><span class="stat-key">Branch walk-in + IGE</span><span class="stat-val">132</span></div>
+        </div>
+        <div class="card card-p">
+          <div class="card-title mb12">Conversion by campaign</div>
+          <div class="funnel-row"><div class="funnel-meta"><span class="funnel-name">Dormant Win-Back</span><span class="funnel-count" style="color:var(--green)">38.1%</span></div><div class="prog-track"><div class="prog-fill" style="width:76%;background:var(--green)"></div></div></div>
+          <div class="funnel-row"><div class="funnel-meta"><span class="funnel-name">Debit Card Push</span><span class="funnel-count" style="color:var(--teal)">22.4%</span></div><div class="prog-track"><div class="prog-fill" style="width:44.8%;background:var(--teal)"></div></div></div>
+          <div class="funnel-row"><div class="funnel-meta"><span class="funnel-name">Salary Account</span><span class="funnel-count" style="color:var(--gold)">14.7%</span></div><div class="prog-track"><div class="prog-fill" style="width:29.4%;background:var(--gold)"></div></div></div>
+          <div class="funnel-row" style="margin:0"><div class="funnel-meta"><span class="funnel-name">KYC Compliance</span><span class="funnel-count" style="color:var(--amber)">61.2%</span></div><div class="prog-track"><div class="prog-fill" style="width:61.2%;background:var(--amber)"></div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════
+     SCREEN 3 — CAMPAIGNS
+═══════════════════════════════════════════ -->
+<div id="s-campaigns" class="screen">
+<div class="shell">
+<aside class="sidebar" data-sb></aside>
+<div class="main">
+  <div class="topbar">
+    <div><div class="topbar-title">Campaigns</div><div class="topbar-sub">12 active · 3 draft · manage all outreach programmes</div></div>
+    <div class="topbar-right">
+      <button class="btn btn-primary btn-sm" onclick="showModal('modal-campaign')">+ New Campaign</button>
+    </div>
+  </div>
+  <div class="page">
+    <div class="g3 mb16">
+      <div class="kpi" style="--kpi-color:var(--teal)"><div class="kpi-label">Active campaigns</div><div class="kpi-val">12</div><div class="kpi-delta up">↑ 3 launched this month</div></div>
+      <div class="kpi" style="--kpi-color:var(--green)"><div class="kpi-label">Total messages sent</div><div class="kpi-val">142K</div><div class="kpi-delta up">↑ 91.4% delivery rate</div></div>
+      <div class="kpi" style="--kpi-color:var(--gold)"><div class="kpi-label">Avg follow-up days to convert</div><div class="kpi-val">2.8d</div><div class="kpi-delta up">D+0, D+1, D+3, D+7 sequence</div></div>
+    </div>
+    <div class="card">
+      <div class="card-head"><div class="card-title">All campaigns</div><select style="width:150px;font-size:11.5px"><option>All use cases</option><option>Dormant Reactivation</option><option>Card Activation</option><option>KYC Compliance</option><option>Salary Account</option><option>BNPL / Credit</option></select></div>
+      <div style="overflow-x:auto"><table class="tbl"><thead><tr><th>Campaign</th><th>Use case</th><th>WA Flow</th><th>Segment</th><th>Leads</th><th>Open%</th><th>Conv%</th><th>Reward/conv</th><th>Status</th><th></th></tr></thead><tbody>
+        <tr><td><div class="tbl-name">Debit Card Push — May</div><div class="tbl-sub">May 1–31</div></td><td><span class="tag-pill t-rev">Card Activation</span></td><td style="font-size:11px;color:var(--text-2)">Card Acquisition</td><td style="font-size:11px">Lagos · 18–55</td><td><b>22,100</b></td><td style="color:var(--green)">91.4%</td><td style="color:var(--green);font-weight:700">22.4%</td><td style="font-size:11px">₦500 airtime</td><td><span class="badge b-green">Live</span></td><td><button class="btn btn-ghost btn-sm" onclick="openCampaignEditor(this)">Edit</button></td></tr>
+        <tr><td><div class="tbl-name">Dormant Win-Back Q2</div><div class="tbl-sub">Apr 15–Jun 30</div></td><td><span class="tag-pill t-comp">Reactivation</span></td><td style="font-size:11px;color:var(--text-2)">Dormant Reactivation</td><td style="font-size:11px">All states · 90d+ dormant</td><td><b>18,400</b></td><td style="color:var(--green)">88.2%</td><td style="color:var(--green);font-weight:700">38.1%</td><td style="font-size:11px">₦500 airtime</td><td><span class="badge b-green">Live</span></td><td><button class="btn btn-ghost btn-sm" onclick="openCampaignEditor(this)">Edit</button></td></tr>
+        <tr><td><div class="tbl-name">KYC Compliance Drive</div><div class="tbl-sub">May 1–Jun 30</div></td><td><span class="tag-pill t-comp">Compliance</span></td><td style="font-size:11px;color:var(--text-2)">KYC Self-Service</td><td style="font-size:11px">BVN-only accounts</td><td><b>91,200</b></td><td style="color:var(--amber)">74.1%</td><td style="color:var(--amber);font-weight:700">61.2%</td><td style="font-size:11px">₦150 data bundle</td><td><span class="badge b-gold">Urgent</span></td><td><button class="btn btn-ghost btn-sm" onclick="openCampaignEditor(this)">Edit</button></td></tr>
+        <tr><td><div class="tbl-name">Salary Account — SME</div><div class="tbl-sub">Apr 28–May 31</div></td><td><span class="tag-pill t-acq">Acquisition</span></td><td style="font-size:11px;color:var(--text-2)">Salary Enrol</td><td style="font-size:11px">SME employees</td><td><b>5,840</b></td><td style="color:var(--teal)">82.4%</td><td style="color:var(--teal);font-weight:700">14.7%</td><td style="font-size:11px">₦2,000 welcome</td><td><span class="badge b-teal">Live</span></td><td><button class="btn btn-ghost btn-sm" onclick="openCampaignEditor(this)">Edit</button></td></tr>
+        <tr style="background:rgba(241,245,249,.5)"><td><div class="tbl-name">BNPL Quick Accept</div><div class="tbl-sub">Draft</div></td><td><span class="tag-pill t-rev">BNPL / Credit</span></td><td style="font-size:11px;color:var(--text-2)">BNPL Quick Accept</td><td style="font-size:11px">Pre-approved customers</td><td>—</td><td>—</td><td>—</td><td style="font-size:11px">None</td><td><span class="badge b-slate">Draft</span></td><td><button class="btn btn-primary btn-sm" onclick="launchDraftCampaign(this)">Launch</button></td></tr>
+        <tr style="background:rgba(241,245,249,.5)"><td><div class="tbl-name">FX Travel Activation</div><div class="tbl-sub">Draft</div></td><td><span class="tag-pill t-acq">FX & Travel</span></td><td style="font-size:11px;color:var(--text-2)">FX Travel Flow</td><td style="font-size:11px">Frequent travellers</td><td>—</td><td>—</td><td>—</td><td style="font-size:11px">₦1,000 activation</td><td><span class="badge b-slate">Draft</span></td><td><button class="btn btn-primary btn-sm" onclick="launchDraftCampaign(this)">Launch</button></td></tr>
+      </tbody></table></div>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     SCREEN 4 — WHATSAPP FLOWS
+═══════════════════════════════════════════ -->
+<div id="s-whatsapp" class="screen">
+<div class="shell">
+<aside class="sidebar" data-sb></aside>
+<div class="main">
+  <div class="topbar">
+    <div><div class="topbar-title">WhatsApp Flows</div><div class="topbar-sub">6 active flows · 142,400 messages sent this month</div></div>
+    <div class="topbar-right">
+      <button class="btn btn-outline btn-sm" onclick="openFlowBuilder()">+ New flow</button>
+    </div>
+  </div>
+  <div class="page">
+    <div style="display:grid;grid-template-columns:280px 1fr;gap:14px;align-items:start">
+      <div style="display:flex;flex-direction:column;gap:7px">
+        <div style="font-size:9.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text-3);margin-bottom:4px">Select a flow to preview</div>
+        <div id="fc-debit" class="flow-card" onclick="showFlow('debit',this)" style="background:#fff;border:2px solid var(--teal);border-radius:var(--r-lg);padding:11px 13px;cursor:pointer">
+          <div style="font-size:12.5px;font-weight:700;color:var(--navy);margin-bottom:2px">Debit Card Acquisition</div>
+          <div style="font-size:10.5px;color:var(--text-3)">Ad → WhatsApp → branch booking → reward</div>
+          <div style="margin-top:5px"><span class="tag-pill t-rev">Active · 22,100 sent</span></div>
+        </div>
+        <div id="fc-dormant" class="flow-card" onclick="showFlow('dormant',this)" style="background:#fff;border:1px solid var(--border);border-radius:var(--r-lg);padding:11px 13px;cursor:pointer">
+          <div style="font-size:12.5px;font-weight:700;color:var(--navy);margin-bottom:2px">Dormant Reactivation</div>
+          <div style="font-size:10.5px;color:var(--text-3)">Identify dormant → incentive → fund account</div>
+          <div style="margin-top:5px"><span class="tag-pill t-rev">Active · 18,400 sent</span></div>
+        </div>
+        <div id="fc-kyc" class="flow-card" onclick="showFlow('kyc',this)" style="background:#fff;border:1px solid var(--border);border-radius:var(--r-lg);padding:11px 13px;cursor:pointer">
+          <div style="font-size:12.5px;font-weight:700;color:var(--navy);margin-bottom:2px">KYC Self-Service Update</div>
+          <div style="font-size:10.5px;color:var(--text-3)">Compliance deadline → doc upload → verify</div>
+          <div style="margin-top:5px"><span class="tag-pill t-comp">Urgent · 91,200 sent</span></div>
+        </div>
+        <div id="fc-salary" class="flow-card" onclick="showFlow('salary',this)" style="background:#fff;border:1px solid var(--border);border-radius:var(--r-lg);padding:11px 13px;cursor:pointer">
+          <div style="font-size:12.5px;font-weight:700;color:var(--navy);margin-bottom:2px">Salary Account Enrol</div>
+          <div style="font-size:10.5px;color:var(--text-3)">Employer link → employee self-enrol → KYC</div>
+          <div style="margin-top:5px"><span class="tag-pill t-acq">Active · 5,840 sent</span></div>
+        </div>
+        <div id="fc-bnpl" class="flow-card" onclick="showFlow('bnpl',this)" style="background:#fff;border:1px solid var(--border);border-radius:var(--r-lg);padding:11px 13px;cursor:pointer">
+          <div style="font-size:12.5px;font-weight:700;color:var(--navy);margin-bottom:2px">BNPL Quick Accept</div>
+          <div style="font-size:10.5px;color:var(--text-3)">Pre-approved offer → 1-tap → instant disbursal</div>
+          <div style="margin-top:5px"><span class="badge b-slate">Draft</span></div>
+        </div>
+        <div id="fc-fx" class="flow-card" onclick="showFlow('fx',this)" style="background:#fff;border:1px solid var(--border);border-radius:var(--r-lg);padding:11px 13px;cursor:pointer">
+          <div style="font-size:12.5px;font-weight:700;color:var(--navy);margin-bottom:2px">FX Travel Activation</div>
+          <div style="font-size:10.5px;color:var(--text-3)">Travel intent → card FX activation → alerts</div>
+          <div style="margin-top:5px"><span class="badge b-slate">Draft</span></div>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:14px">
+          <div style="display:flex;border-bottom:1px solid var(--border);background:var(--slate)">
+            <button id="ptab-wa" onclick="switchFlowTab('wa')" style="padding:8px 16px;font-size:11.5px;font-weight:600;cursor:pointer;border:none;background:#fff;border-bottom:2px solid var(--teal);color:var(--navy);font-family:var(--font)">&#x1F4AC; WhatsApp flow</button>
+            <button id="ptab-email" onclick="switchFlowTab('email')" style="padding:8px 16px;font-size:11.5px;font-weight:600;cursor:pointer;border:none;background:transparent;border-bottom:2px solid transparent;color:var(--text-3);font-family:var(--font)">&#x1F4E7; Email flow</button>
+          </div>
+        <div class="g2">
+          <div class="card card-p">
+            <div class="card-title mb12" id="flow-stats-title">Debit Card Acquisition — stats</div>
+            <div class="stat-row"><span class="stat-key">Messages sent</span><span class="stat-val" id="fs-sent">22,100</span></div>
+            <div class="stat-row"><span class="stat-key">Open rate</span><span class="stat-val" id="fs-open" style="color:var(--teal)">91.4%</span></div>
+            <div class="stat-row"><span class="stat-key">Response rate</span><span class="stat-val" id="fs-resp">68.2%</span></div>
+            <div class="stat-row"><span class="stat-key">Branch appointments booked</span><span class="stat-val" id="fs-appt">5,841</span></div>
+            <div class="stat-row"><span class="stat-key">Conversion rate</span><span class="stat-val" id="fs-conv" style="color:var(--green);font-weight:800">22.4%</span></div>
+          </div>
+          <div class="card card-p">
+            <div class="card-title mb12">Follow-up sequence</div>
+            <div class="stat-row"><span class="stat-key">D+0 — Initial message</span><span class="stat-val">100%</span></div>
+            <div class="stat-row"><span class="stat-key">D+1 — Appointment reminder</span><span class="stat-val">Auto</span></div>
+            <div class="stat-row"><span class="stat-key">D+3 — Urgency nudge</span><span class="stat-val">Auto</span></div>
+            <div class="stat-row"><span class="stat-key">D+7 — Final chance</span><span class="stat-val">Auto</span></div>
+            <div class="stat-row"><span class="stat-key">Stops on conversion</span><span class="stat-val" style="color:var(--green)">✓ Yes</span></div>
+          </div>
+        </div>
+        <div id="pane-wa">
+        <div class="wa-frame">
+          <div class="wa-topbar-ui">
+            <div class="wa-avatar-sm" id="wa-av">U</div>
+            <div>
+              <div class="wa-name-sm" id="wa-name">UBA Nigeria</div>
+              <div class="wa-status-sm">Official WhatsApp Business</div>
+            </div>
+          </div>
+          <div class="wa-body" id="wa-body">
+            <div class="wa-bubble bot">
+              <div class="wa-text" id="wa-m1">Hi Chidi! 👋 This is UBA Nigeria.
+
+We noticed you are interested in our UBA Naira Debit Card — spend up to $6,000 daily internationally.
+
+What is your name and which state are you in?</div>
+              <div class="wa-meta">09:42 AM</div>
+            </div>
+            <div class="wa-bubble user">
+              <div class="wa-text">Chidi Okafor, Lagos</div>
+              <div class="wa-meta">09:43 AM <span class="wa-tick">✓✓</span></div>
+            </div>
+            <div class="wa-bubble bot">
+              <div class="wa-text" id="wa-m2">Great Chidi! Do you already have a UBA account?</div>
+              <div class="wa-qr-btns">
+                <button class="wa-qr-btn" onclick="waFlowStep('existing')">✅ Yes, I have an account</button>
+                <button class="wa-qr-btn" onclick="waFlowStep('new')">🆕 I need to open one</button>
+              </div>
+              <div class="wa-meta">09:43 AM</div>
+            </div>
+            <div class="wa-bubble user"><div class="wa-text">Yes, I have an account</div><div class="wa-meta">09:44 AM <span class="wa-tick">✓✓</span></div></div>
+            <div class="wa-bubble bot">
+              <div class="wa-text" id="wa-m3">Perfect! Your nearest UBA branch:
+
+📍 UBA Victoria Island
+14 Ahmadu Bello Way, VI
+⏰ Mon–Fri 8am–5pm · Sat 9am–1pm
+
+Book tomorrow at 10am? Your card will be ready and waiting. 🎯</div>
+              <div class="wa-qr-btns">
+                <button class="wa-qr-btn" onclick="waBookAppointment()">📅 Yes, book tomorrow 10am</button>
+                <button class="wa-qr-btn" onclick="waAlternativeSlots()">📅 Choose a different time</button>
+                <button class="wa-qr-btn" onclick="waWalkIn()">🚶 I will walk in</button>
+              </div>
+              <div class="wa-meta">09:44 AM</div>
+            </div>
+          </div>
+        </div>
+        </div><!-- /pane-wa -->
+        <div id="pane-email" style="display:none">
+          <div style="background:#f8f9fa;border:1px solid var(--border-2);border-radius:var(--r-lg);overflow:hidden;font-family:Arial,sans-serif">
+            <div style="background:#fff;border-bottom:1px solid var(--border);padding:9px 14px;display:flex;align-items:center;justify-content:space-between">
+              <div><div style="font-size:11.5px;color:var(--text-2)"><strong id="ef-from">UBA Cards</strong> &lt;campaigns@uba.ng&gt;</div>
+              <div style="font-size:11px;color:var(--text-3);margin-top:2px">To: Chidi Okafor &lt;chidi@uba-customer.ng&gt;</div></div>
+              <div style="font-size:10px;color:var(--text-3)">Just now</div>
+            </div>
+            <div id="ef-subject" style="background:var(--slate);padding:8px 14px;font-size:12.5px;font-weight:700;color:var(--navy);border-bottom:1px solid var(--border)">Get your UBA Naira Debit Card &#8212; spend $6,000 daily</div>
+            <div style="padding:14px 16px;background:#fff">
+              <p style="font-size:13.5px;font-weight:600;color:#05192D;margin-bottom:10px">Hi Chidi,</p>
+              <p id="ef-p1" style="font-size:13px;color:#555;line-height:1.75;margin-bottom:10px">We noticed you are interested in the <strong>UBA Naira Debit Card</strong>. With your card you can spend up to <strong>$6,000 daily</strong> on international transactions.</p>
+              <p id="ef-p2" style="font-size:13px;color:#555;line-height:1.75;margin-bottom:14px">Getting your card takes just <strong>10 minutes at your nearest branch</strong>. Book below and get <strong>&#8358;500 airtime</strong> credited the moment you collect it.</p>
+              <div style="text-align:center;margin:14px 0">
+                <button id="ef-cta" onclick="emailCTABook()" style="background:#0EA5A0;color:#fff;padding:11px 28px;border-radius:8px;font-size:13px;font-weight:700;border:none;cursor:pointer;font-family:Arial">Book my appointment &#8594;</button>
+              </div>
+              <hr style="border:none;border-top:1px solid #eee;margin:12px 0">
+              <p style="font-size:10.5px;color:#999;text-align:center">UBA Nigeria &middot; T&amp;Cs apply &middot; <a href="#" style="color:#0EA5A0">Unsubscribe</a></p>
+            </div>
+          </div>
+          <div style="margin-top:10px;background:var(--slate);border-radius:var(--r);padding:9px 12px">
+            <div style="font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text-3);margin-bottom:5px">Email performance</div>
+            <div style="display:flex;gap:16px;flex-wrap:wrap">
+              <span style="font-size:12px;color:var(--text-2)">Open: <strong id="ef-open" style="color:var(--teal)">28.4%</strong></span>
+              <span style="font-size:12px;color:var(--text-2)">Click: <strong id="ef-click" style="color:var(--teal)">8.2%</strong></span>
+              <span style="font-size:12px;color:var(--text-2)">Conv: <strong id="ef-conv" style="color:var(--green)">4.1%</strong></span>
+              <span style="font-size:12px;color:var(--text-2)">Sent: <strong id="ef-sent">22,100</strong></span>
+            </div>
+          </div>
+        </div><!-- /pane-email -->
+      </div><!-- /flex-col -->
+    </div><!-- /grid -->
+  </div><!-- /page -->
+</div><!-- /main -->
+</div><!-- /shell -->
+</div><!-- /screen -->
+
+
+<!-- ═══════════════════════════════════════════════
+     SCREEN 5 — DORMANT REACTIVATION
+═══════════════════════════════════════════ -->
+<div id="s-dormant" class="screen">
+<div class="shell">
+<aside class="sidebar" data-sb></aside>
+<div class="main">
+  <div class="topbar">
+    <div><div class="topbar-title">Dormant Account Reactivation</div><div class="topbar-sub">4,218 accounts inactive 90d+ · ₦24.8B at-risk deposits</div></div>
+    <div class="topbar-right">
+      <button class="btn btn-danger btn-lg" onclick="launchWinBackAll()">🚀 Launch win-back sequence</button>
+    </div>
+  </div>
+  <div class="page">
+    <div class="kpi-grid">
+      <div class="kpi" style="--kpi-color:var(--rose)"><div class="kpi-label">Total dormant accounts</div><div class="kpi-val">4,218</div><div class="kpi-delta down">90+ days inactive</div></div>
+      <div class="kpi" style="--kpi-color:var(--amber)"><div class="kpi-label">At-risk deposit value</div><div class="kpi-val">₦24.8B</div><div class="kpi-delta warn">Avg ₦5.9M per account</div></div>
+      <div class="kpi" style="--kpi-color:var(--green)"><div class="kpi-label">Reactivated this month</div><div class="kpi-val">7,012</div><div class="kpi-delta up">↑ 38.1% success rate</div></div>
+      <div class="kpi" style="--kpi-color:var(--teal)"><div class="kpi-label">Revenue recovered</div><div class="kpi-val">₦4.8B</div><div class="kpi-delta up">↑ Via IGE win-back flows</div></div>
+    </div>
+    <div class="gap-alert mb8">
+      <strong>The gap being closed:</strong> Traditional approach — bank sends generic SMS "your account is inactive, please visit a branch." Customer ignores it. Call centre follow-up costs ₦5,000/customer and reaches 12% answer rate. Relationship damaged. Deposits lost to competitor.
+    </div>
+    <div class="ige-sol mb16">
+      <strong>IGE approach:</strong> Personalised WhatsApp with the customer's actual balance shown, an immediate ₦500 airtime incentive, 1-tap mobile funding option, and a 3-step automated sequence that stops the moment the customer reactivates or opts out.
+    </div>
+    <div class="g2 mb16">
+      <div class="card">
+        <div class="card-head"><div><div class="card-title">Priority dormant accounts</div><div class="card-sub">Sorted by deposit value × dormancy risk</div></div><button class="btn btn-danger btn-sm" onclick="launchWinBackAll()">Send to all</button></div>
+        <div style="overflow-x:auto"><table class="tbl"><thead><tr><th>Customer</th><th>Days dormant</th><th>Balance</th><th>Risk</th><th>Last outreach</th><th></th></tr></thead><tbody>
+          <tr><td><div class="tbl-name">Emeka C. Nwosu</div><div class="tbl-sub">GTB-converted · Lagos</div></td><td style="color:var(--rose);font-weight:700">142d</td><td style="font-weight:700">₦12.4M</td><td><span class="badge b-rose">Critical</span></td><td style="font-size:10.5px;color:var(--text-3)">Never contacted</td><td><button class="btn btn-danger btn-sm" onclick="sendWinBack('Emeka C. Nwosu','₦12.4M','142')">Send now</button></td></tr>
+          <tr><td><div class="tbl-name">Adaeze F. Obi</div><div class="tbl-sub">Salary acct · Enugu</div></td><td style="color:var(--rose);font-weight:700">118d</td><td style="font-weight:700">₦8.1M</td><td><span class="badge b-rose">Critical</span></td><td style="font-size:10.5px;color:var(--text-3)">Never contacted</td><td><button class="btn btn-danger btn-sm" onclick="sendWinBack('Adaeze F. Obi','₦8.1M','118')">Send now</button></td></tr>
+          <tr><td><div class="tbl-name">Ibrahim K. Musa</div><div class="tbl-sub">Business acct · Kano</div></td><td style="color:var(--amber);font-weight:700">97d</td><td style="font-weight:700">₦5.8M</td><td><span class="badge b-gold">High</span></td><td style="font-size:10.5px;color:var(--text-3)">D+1 sent</td><td><button class="btn btn-outline btn-sm" onclick="sendFollowUp('Ibrahim K. Musa','D+3')">D+3 nudge</button></td></tr>
+          <tr><td><div class="tbl-name">Chioma N. Eze</div><div class="tbl-sub">Savings acct · Owerri</div></td><td style="color:var(--amber);font-weight:700">91d</td><td style="font-weight:700">₦2.2M</td><td><span class="badge b-gold">High</span></td><td style="font-size:10.5px;color:var(--text-3)">D+1, D+3 sent</td><td><button class="btn btn-outline btn-sm" onclick="sendFollowUp('Chioma N. Eze','D+7 final')">D+7 final</button></td></tr>
+        </tbody></table></div>
+      </div>
+      <div class="card card-p">
+        <div class="card-title mb12">Win-back WhatsApp preview</div>
+        <div class="wa-frame" style="font-size:.9em">
+          <div class="wa-topbar-ui" style="padding:9px 11px">
+            <div class="wa-avatar-sm" style="width:28px;height:28px;font-size:11px">U</div>
+            <div><div class="wa-name-sm" style="font-size:12px">UBA Nigeria</div><div class="wa-status-sm" style="font-size:9.5px">Official WhatsApp</div></div>
+          </div>
+          <div class="wa-body" style="padding:9px 7px;gap:6px">
+            <div class="wa-bubble bot" style="max-width:92%">
+              <div class="wa-text" style="font-size:11.5px">Hi Emeka! 👋 We have missed you at UBA.
+
+Your account has been quiet for 142 days — and you have ₦12.4M sitting there earning nothing.
+
+We would love to have you back. Reactivate today and we will credit ₦500 airtime instantly.</div>
+              <div class="wa-qr-btns">
+                <button class="wa-qr-btn" style="font-size:11px" onclick="dormantYes()">✅ Yes, I am ready to reactivate</button>
+                <button class="wa-qr-btn" style="font-size:11px" onclick="dormantRemind()">⏰ Remind me in 3 days</button>
+                <button class="wa-qr-btn" style="font-size:11px" onclick="dormantOptOut()">❌ Not interested</button>
+              </div>
+              <div class="wa-meta">10:15 AM</div>
+            </div>
+          </div>
+        </div>
+        <div style="margin-top:11px">
+          <div class="stat-row"><span class="stat-key">Cost per reactivation</span><span class="stat-val">₦500 airtime + ₦500 IGE fee</span></div>
+          <div class="stat-row"><span class="stat-key">Annual income per reactivated customer</span><span class="stat-val" style="color:var(--green)">₦84,000</span></div>
+          <div class="stat-row"><span class="stat-key">ROI per reactivated customer</span><span class="stat-val" style="color:var(--green);font-weight:800">84:1</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     SCREEN 6 — BRANCH ROUTING
+═══════════════════════════════════════════ -->
+<div id="s-branches" class="screen">
+<div class="shell">
+<aside class="sidebar" data-sb></aside>
+<div class="main">
+  <div class="topbar">
+    <div><div class="topbar-title">Branch Routing</div><div class="topbar-sub">14 leads awaiting routing · 68 appointments today</div></div>
+    <div class="topbar-right">
+      <button class="btn btn-primary btn-sm" onclick="autoRouteAll()">⚡ Auto-route all unrouted</button>
+    </div>
+  </div>
+  <div class="page">
+    <div class="g2 mb16">
+      <div class="card">
+        <div class="card-head"><div class="card-title">Pending routing queue</div><span class="badge b-rose">14 unrouted</span></div>
+        <div style="overflow-x:auto"><table class="tbl"><thead><tr><th>Customer</th><th>State</th><th>Campaign</th><th>Nearest branch</th><th></th></tr></thead><tbody>
+          <tr><td><div class="tbl-name">Chidi Okafor</div><div class="tbl-sub">Victoria Island, Lagos</div></td><td>Lagos</td><td><span class="tag-pill t-rev">Debit Card</span></td><td style="color:var(--teal);font-weight:600;font-size:11.5px">UBA Victoria Island — 0.8km</td><td><button class="btn btn-primary btn-sm" onclick="routeLead('Chidi Okafor','UBA Victoria Island','Debit Card')">Route + book</button></td></tr>
+          <tr><td><div class="tbl-name">Tunde Adeyinka</div><div class="tbl-sub">Ikeja, Lagos</div></td><td>Lagos</td><td><span class="tag-pill t-rev">Debit Card</span></td><td style="color:var(--teal);font-weight:600;font-size:11.5px">UBA Ikeja — 1.2km</td><td><button class="btn btn-primary btn-sm" onclick="routeLead('Tunde Adeyinka','UBA Ikeja','Debit Card')">Route + book</button></td></tr>
+          <tr><td><div class="tbl-name">Bola Akin</div><div class="tbl-sub">Maitama, Abuja</div></td><td>Abuja</td><td><span class="tag-pill t-acq">Salary Account</span></td><td style="color:var(--teal);font-weight:600;font-size:11.5px">UBA Maitama — 2.1km</td><td><button class="btn btn-primary btn-sm" onclick="routeLead('Bola Akin','UBA Maitama','Salary Account')">Route + book</button></td></tr>
+          <tr><td><div class="tbl-name">Fatima Bello</div><div class="tbl-sub">Sabon Gari, Kano</div></td><td>Kano</td><td><span class="tag-pill t-comp">Dormant</span></td><td style="color:var(--teal);font-weight:600;font-size:11.5px">UBA Kano Centre — 3.4km</td><td><button class="btn btn-primary btn-sm" onclick="routeLead('Fatima Bello','UBA Kano Centre','Dormant')">Route + book</button></td></tr>
+        </tbody></table></div>
+      </div>
+      <div class="card card-p">
+        <div class="card-title mb12">Branch performance — today</div>
+        <div class="stat-row"><span class="stat-key">UBA Victoria Island</span><span class="stat-val">18 appts · 15 converted</span></div>
+        <div class="stat-row"><span class="stat-key">UBA Ikeja</span><span class="stat-val">14 appts · 11 converted</span></div>
+        <div class="stat-row"><span class="stat-key">UBA Lekki</span><span class="stat-val">9 appts · 8 converted</span></div>
+        <div class="stat-row"><span class="stat-key">UBA Marina</span><span class="stat-val">12 appts · 9 converted</span></div>
+        <div class="stat-row"><span class="stat-key">UBA Maitama, Abuja</span><span class="stat-val">8 appts · 7 converted</span></div>
+        <div class="stat-row" style="border-top:2px solid var(--navy);margin-top:4px;padding-top:8px"><span style="font-weight:700;color:var(--navy)">Platform avg conversion</span><span style="font-size:14px;font-weight:800;color:var(--green)">83.2%</span></div>
+        <div style="font-size:10px;color:var(--text-3);margin-top:5px">vs 22.4% industry walk-in average. IGE pre-briefs branches with full customer context before arrival.</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-head"><div class="card-title">Branch customer brief — what the teller sees on arrival</div><div class="card-sub">Auto-generated by IGE when appointment is confirmed</div></div>
+      <div class="card-p">
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px">
+          <div>
+            <div style="font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text-3);margin-bottom:8px">Customer profile</div>
+            <div class="stat-row"><span class="stat-key">Name</span><span class="stat-val">Chidi Okafor</span></div>
+            <div class="stat-row"><span class="stat-key">Account no.</span><span class="stat-val">••• ••• 4821</span></div>
+            <div class="stat-row"><span class="stat-key">Account type</span><span class="stat-val">Current</span></div>
+            <div class="stat-row"><span class="stat-key">BVN verified</span><span class="stat-val" style="color:var(--green)">✓ Yes</span></div>
+            <div class="stat-row"><span class="stat-key">KYC status</span><span class="stat-val" style="color:var(--green)">Complete</span></div>
+          </div>
+          <div>
+            <div style="font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text-3);margin-bottom:8px">Why they are here</div>
+            <div class="ige-sol" style="font-size:11px;padding:9px 11px;margin-bottom:8px"><strong>Debit card collection.</strong> Customer responded to UBA card campaign via WhatsApp. Pre-selected the UBA Naira Debit Card (standard). Eligible for ₦500 airtime reward on card activation.</div>
+            <div class="stat-row"><span class="stat-key">Campaign</span><span class="stat-val">Debit Card Push — May</span></div>
+            <div class="stat-row"><span class="stat-key">Appointment</span><span class="stat-val">Today 10:00 AM</span></div>
+          </div>
+          <div>
+            <div style="font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text-3);margin-bottom:8px">Teller actions</div>
+            <div style="display:flex;flex-direction:column;gap:7px">
+              <button class="btn btn-primary" style="width:100%" onclick="issueCard('Chidi Okafor')">Issue debit card</button>
+              <button class="btn btn-green" style="width:100%" onclick="creditReward('Chidi Okafor','₦500 airtime')">Credit ₦500 reward</button>
+              <button class="btn btn-outline" style="width:100%" onclick="markConverted('Chidi Okafor')">Mark converted</button>
+              <button class="btn btn-ghost" style="width:100%;color:var(--rose);font-size:11px" onclick="markNotConverted('Chidi Okafor')">Did not convert</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════
+     SCREEN 7 — KYC COMPLIANCE
+═══════════════════════════════════════════ -->
+<div id="s-kyc" class="screen">
+<div class="shell">
+<aside class="sidebar" data-sb></aside>
+<div class="main">
+  <div class="topbar">
+    <div><div class="topbar-title">KYC & Compliance</div><div class="topbar-sub">CBN deadline: June 30, 2026 · 46 days remaining</div></div>
+    <div class="topbar-right">
+      <span class="badge b-rose" style="font-size:11.5px;padding:5px 13px">⚠ 46 days to deadline</span>
+      <button class="btn btn-danger btn-sm" onclick="launchKYCSequence()">🚀 Launch reminder sequence</button>
+    </div>
+  </div>
+  <div class="page">
+    <div class="kpi-grid">
+      <div class="kpi" style="--kpi-color:var(--rose)"><div class="kpi-label">KYC incomplete</div><div class="kpi-val">35,448</div><div class="kpi-delta down">CBN deadline Jun 30</div></div>
+      <div class="kpi" style="--kpi-color:var(--gold)"><div class="kpi-label">Compliance fine at risk</div><div class="kpi-val">₦240M</div><div class="kpi-delta warn">Estimated CBN penalty</div></div>
+      <div class="kpi" style="--kpi-color:var(--green)"><div class="kpi-label">Completed via WhatsApp</div><div class="kpi-val">55,752</div><div class="kpi-delta up">↑ 80% digital completion</div></div>
+      <div class="kpi" style="--kpi-color:var(--teal)"><div class="kpi-label">Cost saving vs branch</div><div class="kpi-val">₦335M</div><div class="kpi-delta up">₦6,000 saved per customer</div></div>
+    </div>
+    <div class="g2 mb16">
+      <div class="card">
+        <div class="card-head"><div class="card-title">KYC completion by tier</div></div>
+        <div class="card-p">
+          <div class="funnel-row"><div class="funnel-meta"><span class="funnel-name">Tier 3 — full KYC (₦500K+ transactions)</span><span class="funnel-count" style="color:var(--green)">94.2%</span></div><div class="prog-track"><div class="prog-fill" style="width:94.2%;background:var(--green)"></div></div></div>
+          <div class="funnel-row"><div class="funnel-meta"><span class="funnel-name">Tier 2 — BVN + photo ID</span><span class="funnel-count" style="color:var(--teal)">78.4%</span></div><div class="prog-track"><div class="prog-fill" style="width:78.4%;background:var(--teal)"></div></div></div>
+          <div class="funnel-row" style="margin:0"><div class="funnel-meta"><span class="funnel-name">Tier 1 — BVN only (incomplete)</span><span class="funnel-count" style="color:var(--rose)">61.2%</span></div><div class="prog-track"><div class="prog-fill" style="width:61.2%;background:var(--rose)"></div></div></div>
+        </div>
+      </div>
+      <div class="card card-p">
+        <div class="card-title mb12">Self-service KYC flow — WhatsApp steps</div>
+        <div class="steps">
+          <div class="step-item done"><div class="step-circle">✓</div><div class="step-label">WhatsApp CTA tap</div></div>
+          <div class="step-item done"><div class="step-circle">✓</div><div class="step-label">BVN verified via API</div></div>
+          <div class="step-item active"><div class="step-circle">3</div><div class="step-label">Document upload</div></div>
+          <div class="step-item todo"><div class="step-circle">4</div><div class="step-label">Liveness selfie</div></div>
+          <div class="step-item todo"><div class="step-circle">5</div><div class="step-label">Submitted to core banking</div></div>
+        </div>
+        <div class="stat-row"><span class="stat-key">Avg completion time</span><span class="stat-val" style="color:var(--teal)">3 min 24 sec</span></div>
+        <div class="stat-row"><span class="stat-key">Drop-off point</span><span class="stat-val">Selfie step (12%)</span></div>
+        <div class="stat-row"><span class="stat-key">Branch cost (traditional)</span><span class="stat-val" style="color:var(--rose)">₦6,000 per customer</span></div>
+        <div class="stat-row"><span class="stat-key">IGE WhatsApp cost</span><span class="stat-val" style="color:var(--green)">₦150 per customer</span></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-head"><div class="card-title">High-priority — accounts at freeze risk</div><div class="card-sub">Customers with pending KYC and high transaction volumes</div></div>
+      <div style="overflow-x:auto"><table class="tbl"><thead><tr><th>Customer</th><th>KYC status</th><th>Monthly txn vol</th><th>Last activity</th><th>Risk</th><th></th></tr></thead><tbody>
+        <tr><td><div class="tbl-name">Emeka J. Okolie</div><div class="tbl-sub">Business current · Lagos</div></td><td><span class="badge b-rose">BVN only</span></td><td style="font-weight:700">₦8.4M</td><td>Today</td><td><span class="badge b-rose">Critical</span></td><td><button class="btn btn-danger btn-sm" onclick="sendKYCLink('Emeka J. Okolie','₦8.4M')">Send KYC link</button></td></tr>
+        <tr><td><div class="tbl-name">Halima O. Sule</div><div class="tbl-sub">Salary account · Abuja</div></td><td><span class="badge b-rose">BVN only</span></td><td style="font-weight:700">₦2.1M</td><td>Yesterday</td><td><span class="badge b-rose">Critical</span></td><td><button class="btn btn-danger btn-sm" onclick="sendKYCLink('Halima O. Sule','₦2.1M')">Send KYC link</button></td></tr>
+        <tr><td><div class="tbl-name">David O. Nwachukwu</div><div class="tbl-sub">Corporate · Port Harcourt</div></td><td><span class="badge b-gold">Photo ID pending</span></td><td style="font-weight:700">₦14.8M</td><td>Today</td><td><span class="badge b-gold">High</span></td><td><button class="btn btn-outline btn-sm" onclick="sendKYCReminder('David O. Nwachukwu','₦14.8M')">Reminder</button></td></tr>
+      </tbody></table></div>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     SCREEN 8 — ANALYTICS & ROI
+═══════════════════════════════════════════ -->
+<div id="s-analytics" class="screen">
+<div class="shell">
+<aside class="sidebar" data-sb></aside>
+<div class="main">
+  <div class="topbar">
+    <div><div class="topbar-title">Analytics & ROI</div><div class="topbar-sub">May 2026 · ₦142M IGE cost · ₦5.03B net value delivered</div></div>
+    <div class="topbar-right">
+      <button class="btn btn-outline btn-sm" onclick="downloadPDFReport()">Download PDF</button>
+      <button class="btn btn-outline btn-sm" onclick="shareReportCFO()">Share to CFO</button>
+    </div>
+  </div>
+  <div class="page">
+    <div class="kpi-grid">
+      <div class="kpi" style="--kpi-color:var(--teal)"><div class="kpi-label">Total leads generated</div><div class="kpi-val">48,292</div><div class="kpi-delta up">↑ 24% vs April</div></div>
+      <div class="kpi" style="--kpi-color:var(--green)"><div class="kpi-label">Platform conversion rate</div><div class="kpi-val">19.9%</div><div class="kpi-delta up">vs industry 0.2–0.8%</div></div>
+      <div class="kpi" style="--kpi-color:var(--gold)"><div class="kpi-label">CAC via IGE</div><div class="kpi-val">₦1,240</div><div class="kpi-delta up">vs ₦15,000 media</div></div>
+      <div class="kpi" style="--kpi-color:var(--rose)"><div class="kpi-label">Platform ROI</div><div class="kpi-val">35.4:1</div><div class="kpi-delta up">₦5.03B on ₦142M cost</div></div>
+    </div>
+    <div class="g2 mb16">
+      <div class="card">
+        <div class="card-head"><div class="card-title">Revenue attributed to IGE — May 2026</div></div>
+        <div class="card-p">
+          <div class="stat-row"><span class="stat-key">Dormant account recovery</span><span class="stat-val" style="color:var(--teal)">₦4,800,000,000</span></div>
+          <div class="stat-row"><span class="stat-key">Debit card activation revenue</span><span class="stat-val" style="color:var(--teal)">₦48,000,000</span></div>
+          <div class="stat-row"><span class="stat-key">New salary account float income</span><span class="stat-val" style="color:var(--teal)">₦84,000,000</span></div>
+          <div class="stat-row"><span class="stat-key">KYC compliance fine avoided</span><span class="stat-val" style="color:var(--green)">₦240,000,000</span></div>
+          <div class="stat-row"><span class="stat-key">Branch cost saving (digital KYC)</span><span class="stat-val" style="color:var(--green)">₦335,000,000</span></div>
+          <div class="stat-row" style="border-top:2px solid var(--navy);margin-top:5px;padding-top:9px"><span style="font-size:13px;font-weight:700;color:var(--navy)">Gross value delivered</span><span style="font-size:17px;font-weight:800;color:var(--teal)">₦5,507,000,000</span></div>
+          <div class="stat-row"><span style="font-weight:600;color:var(--rose)">IGE platform cost</span><span style="font-size:14px;font-weight:700;color:var(--rose)">−₦142,000,000</span></div>
+          <div class="stat-row" style="border-top:2px solid var(--green);margin-top:4px;padding-top:9px"><span style="font-size:14px;font-weight:800;color:var(--navy)">Net value to UBA</span><span style="font-size:19px;font-weight:800;color:var(--green)">+₦5,365,000,000</span></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head"><div class="card-title">Performance by use case</div></div>
+        <div style="overflow-x:auto"><table class="tbl"><thead><tr><th>Use case</th><th>Leads</th><th>Conv%</th><th>Value attributed</th></tr></thead><tbody>
+          <tr><td>Dormant Reactivation</td><td>18,400</td><td style="color:var(--green);font-weight:700">38.1%</td><td style="font-weight:700;color:var(--teal)">₦4.8B</td></tr>
+          <tr><td>KYC Compliance</td><td>91,200</td><td style="color:var(--amber);font-weight:700">61.2%</td><td style="font-weight:700;color:var(--green)">₦575M</td></tr>
+          <tr><td>Debit Card Activation</td><td>22,100</td><td style="color:var(--teal);font-weight:700">22.4%</td><td style="font-weight:700;color:var(--teal)">₦48M</td></tr>
+          <tr><td>Salary Account Acquisition</td><td>5,840</td><td style="color:var(--teal);font-weight:700">14.7%</td><td style="font-weight:700;color:var(--teal)">₦84M</td></tr>
+          <tr style="background:var(--slate)"><td><strong>TOTAL</strong></td><td><strong>137,540</strong></td><td>—</td><td style="font-weight:800;color:var(--teal)"><strong>₦5.5B</strong></td></tr>
+        </tbody></table></div>
+        <div class="card-p" style="border-top:1px solid var(--border)">
+          <div class="stat-row"><span class="stat-key">Avg messages per conversion</span><span class="stat-val">4.2</span></div>
+          <div class="stat-row"><span class="stat-key">Avg days to conversion</span><span class="stat-val">2.8 days</span></div>
+          <div class="stat-row"><span class="stat-key">Opt-out rate</span><span class="stat-val" style="color:var(--green)">2.1%</span></div>
+          <div class="stat-row"><span class="stat-key">WhatsApp messages delivered</span><span class="stat-val">142,400</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     SCREEN 9 — SEGMENTS (placeholder)
+═══════════════════════════════════════════ -->
+<div id="s-segments" class="screen">
+<div class="shell">
+<aside class="sidebar" data-sb></aside>
+<div class="main">
+  <div class="topbar"><div><div class="topbar-title">Customer Segments</div><div class="topbar-sub">AI-powered segmentation by RFM · transaction behaviour · product holding</div></div></div>
+  <div class="page">
+    <div class="card card-p" style="text-align:center;padding:48px 20px">
+      <div style="font-size:44px;margin-bottom:14px">🔬</div>
+      <div class="card-title" style="font-size:16px;margin-bottom:8px">Segment Analysis Engine</div>
+      <div style="font-size:13px;color:var(--text-3);max-width:420px;margin:0 auto 20px;line-height:1.6">Connect your core banking API or upload a transaction extract to run AI segment analysis. IGE will classify customers across 6 segments and generate targeted campaign recommendations for each.</div>
+      <button class="btn btn-primary btn-lg" onclick="openAPIConnect()">Connect core banking API</button>
+      <span style="font-size:12px;color:var(--text-3);margin:0 12px">or</span>
+      <button class="btn btn-outline btn-lg" onclick="openCSVUpload()">Upload transaction data</button>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════
+     MODALS
+═══════════════════════════════════════════ -->
+<div id="toast-wrap" class="toast-wrap"></div>
+
+<!-- Campaign modal -->
+<div id="modal-campaign" style="display:none" class="modal-overlay" onclick="if(event.target===this)this.style.display='none'">
+  <div class="modal-box">
+    <div class="modal-head"><div class="modal-title">Create new campaign</div><button class="modal-close" onclick="document.getElementById('modal-campaign').style.display='none'">×</button></div>
+    <div class="modal-body">
+      <div class="field-group"><label>Campaign name <span class="required">*</span></label><input type="text" placeholder="e.g. Debit Card Push — June 2026"></div>
+      <div class="field-row">
+        <div class="field-group"><label>Use case <span class="required">*</span></label><select><option>Select use case...</option><option>Dormant Account Reactivation</option><option>Debit Card Activation</option><option>KYC Compliance Update</option><option>Salary Account Acquisition</option><option>BNPL / Consumer Credit</option><option>FX & Travel Engagement</option><option>Digital Banking Migration</option><option>Savings Goal</option><option>Insurance Cross-sell</option></select></div>
+        <div class="field-group"><label>WhatsApp flow</label><select><option>Auto-match to use case</option><option>Debit Card Acquisition</option><option>Dormant Reactivation</option><option>KYC Self-Service</option><option>Salary Account Enrol</option><option>BNPL Quick Accept</option></select></div>
+      </div>
+      <div class="field-row">
+        <div class="field-group"><label>Start date</label><input type="date"></div>
+        <div class="field-group"><label>End date</label><input type="date"></div>
+      </div>
+      <div class="field-row">
+        <div class="field-group"><label>Target segment</label><input type="text" placeholder="e.g. Lagos · 18–45 · Current account"></div>
+        <div class="field-group"><label>Estimated audience</label><input type="number" placeholder="e.g. 50,000"></div>
+      </div>
+      <div class="field-row">
+        <div class="field-group"><label>Reward per conversion (₦)</label><input type="number" placeholder="e.g. 500"></div>
+        <div class="field-group"><label>Reward type</label><select><option>Airtime</option><option>Data bundle</option><option>Cash credit</option><option>Fee waiver</option><option>None</option></select></div>
+      </div>
+      <div class="field-group"><label>Conversion goal</label><input type="text" placeholder="e.g. Card collected and activated at branch within 7 days"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-outline" onclick="document.getElementById('modal-campaign').style.display='none'">Cancel</button>
+      <button class="btn btn-outline" onclick="saveCampaignDraft()">Save draft</button>
+      <button class="btn btn-primary" onclick="launchNewCampaign()">Launch campaign</button>
+    </div>
+  </div>
+</div>
+
+<!-- Lead manual entry modal -->
+<div id="modal-lead" style="display:none" class="modal-overlay" onclick="if(event.target===this)this.style.display='none'">
+  <div class="modal-box">
+    <div class="modal-head"><div class="modal-title">Manual lead entry</div><button class="modal-close" onclick="document.getElementById('modal-lead').style.display='none'">×</button></div>
+    <div class="modal-body">
+      <div class="field-row">
+        <div class="field-group"><label>First name <span class="required">*</span></label><input type="text" placeholder="Chidi"></div>
+        <div class="field-group"><label>Surname <span class="required">*</span></label><input type="text" placeholder="Okafor"></div>
+      </div>
+      <div class="field-row">
+        <div class="field-group"><label>Phone number <span class="required">*</span></label><input type="tel" placeholder="08012345678"></div>
+        <div class="field-group"><label>Email address</label><input type="email" placeholder="chidi@email.com"></div>
+      </div>
+      <div class="field-row">
+        <div class="field-group"><label>State</label><select><option>Select state...</option><option>Lagos</option><option>Abuja (FCT)</option><option>Kano</option><option>Rivers</option><option>Ogun</option><option>Oyo</option></select></div>
+        <div class="field-group"><label>LGA</label><input type="text" placeholder="e.g. Victoria Island"></div>
+      </div>
+      <div class="field-row">
+        <div class="field-group"><label>Campaign</label><select><option>Debit Card Push — May</option><option>Dormant Win-Back Q2</option><option>KYC Compliance Drive</option><option>Salary Account — SME</option></select></div>
+        <div class="field-group"><label>Lead source</label><select><option>Branch walk-in</option><option>WhatsApp</option><option>USSD</option><option>QR code</option><option>Referral</option></select></div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-outline" onclick="document.getElementById('modal-lead').style.display='none'">Cancel</button>
+      <button class="btn btn-primary" onclick="document.getElementById('modal-lead').style.display='none';saveAndRouteLead()">Save & route lead</button>
+    </div>
+  </div>
+</div>
+
+
+<script>
+// ── Sidebar init ─────────────────────────────────────────
+function buildSidebars() {
+  var tpl = document.getElementById('sidebar-tpl');
+  if (!tpl) return;
+  var content = tpl.innerHTML;
+  document.querySelectorAll('[data-sb]').forEach(function(sb) {
+    sb.innerHTML = content;
+    sb.className = 'sidebar';
+    sb.querySelectorAll('.sb-item[data-screen]').forEach(function(item) {
+      item.addEventListener('click', function() {
+        go(item.getAttribute('data-screen'));
+      });
+    });
+  });
+}
+
+// ── Navigation ───────────────────────────────────────────
+var SCREENS = ['dashboard','leads','campaigns','whatsapp','branches','dormant','kyc','analytics','segments'];
+
+function go(id) {
+  SCREENS.forEach(function(s) {
+    var el = document.getElementById('s-'+s);
+    if (el) el.classList.remove('active');
+  });
+  var target = document.getElementById('s-'+id);
+  if (target) {
+    target.classList.add('active');
+  } else {
+    showToast('Screen "'+id+'" coming soon in full release');
+    return;
+  }
+
+  // Update active states across all sidebars
+  document.querySelectorAll('.sb-item[data-screen]').forEach(function(item) {
+    item.classList.toggle('active', item.getAttribute('data-screen') === id);
+  });
+
+  window.scrollTo(0, 0);
+}
+
+// ── Toast ─────────────────────────────────────────────────
+function showToast(msg) {
+  var wrap = document.getElementById('toast-wrap');
+  var t = document.createElement('div');
+  t.className = 'toast';
+  t.textContent = msg;
+  wrap.appendChild(t);
+  setTimeout(function() {
+    t.style.transition = 'all .3s';
+    t.style.opacity = '0';
+    t.style.transform = 'translateY(8px)';
+    setTimeout(function() { if (t.parentNode) t.parentNode.removeChild(t); }, 300);
+  }, 2600);
+}
+
+// ── Modal ─────────────────────────────────────────────────
+function showModal(id) {
+  var el = document.getElementById(id);
+  if (el) el.style.display = 'flex';
+}
+
+// ── WhatsApp flow preview switcher ────────────────────────
+var FLOWS = {
+  debit: {
+    title: 'Debit Card Acquisition — stats',
+    sent: '22,100', open: '91.4%', resp: '68.2%', appt: '5,841', conv: '22.4%',
+    av: 'U', name: 'UBA Nigeria',
+    m1: 'Hi Chidi! 👋 This is UBA Nigeria.\n\nWe noticed you are interested in our UBA Naira Debit Card — spend up to $6,000 daily internationally.\n\nWhat is your name and which state are you in?',
+    m2: 'Great Chidi! Do you already have a UBA account?',
+    m3: 'Perfect! Your nearest UBA branch:\n\n📍 UBA Victoria Island\n14 Ahmadu Bello Way, VI\n⏰ Mon–Fri 8am–5pm, Sat 9am–1pm\n\nBook tomorrow at 10am? Your card will be ready and waiting. 🎯',
+    btn1: '✅ Yes, book tomorrow 10am', toast1: 'Appointment booked! Branch pre-briefed. ₦500 airtime queued.',
+    btn2: '📅 Choose a different time', toast2: 'Showing alternative slots...',
+    btn3: '🚶 I will walk in', toast3: 'Walk-in guidance sent.'
+  },
+  dormant: {
+    title: 'Dormant Reactivation — stats',
+    sent: '18,400', open: '88.2%', resp: '61.4%', appt: 'N/A', conv: '38.1%',
+    av: 'U', name: 'UBA Nigeria',
+    m1: 'Hi Emeka! 👋 We have missed you at UBA.\n\nYour account has been quiet for 142 days — and you have ₦12.4M sitting there earning nothing.\n\nWe would love to have you back. Reactivate today and receive ₦500 airtime instantly.',
+    m2: 'All it takes is one transaction on your account this week.',
+    m3: 'Reply YES and we will send you a mobile top-up link. Your account reactivates the moment you fund it.',
+    btn1: '✅ Yes, I am ready', toast1: 'Emeka said YES → Mobile funding link sent. ₦500 airtime queued.',
+    btn2: '⏰ Remind me in 3 days', toast2: 'D+3 reminder scheduled for Emeka.',
+    btn3: '❌ Not interested', toast3: 'Emeka opted out. Removed from sequence.'
+  },
+  kyc: {
+    title: 'KYC Self-Service — stats',
+    sent: '91,200', open: '74.1%', resp: '68.8%', appt: 'N/A', conv: '61.2%',
+    av: 'U', name: 'UBA Compliance',
+    m1: 'Hi! ⚠️ Important notice from UBA.\n\nYour account requires a KYC update before June 30 to avoid restrictions.\n\nGood news: it takes just 3 minutes here — no branch visit.',
+    m2: 'I need: 1. A photo of your government ID. 2. A quick selfie for liveness check.\n\nReady to start?',
+    m3: 'Please send a clear photo of your NIN slip, driver\'s licence, or international passport. Front side only.',
+    btn1: '✅ Yes, let us start', toast1: 'KYC flow started. Document upload link sent.',
+    btn2: '⏰ Remind me tomorrow', toast2: 'KYC reminder scheduled for tomorrow.',
+    btn3: '❓ I need help', toast3: 'Support agent notified to assist.'
+  },
+  salary: {
+    title: 'Salary Account Enrol — stats',
+    sent: '5,840', open: '82.4%', resp: '54.1%', appt: '1,240', conv: '14.7%',
+    av: 'U', name: 'UBA Nigeria',
+    m1: 'Hi! Your employer has partnered with UBA for payroll.\n\nOpening your UBA salary account takes 4 minutes here — no branch visit needed.\n\nWelcome bonus: ₦2,000 airtime on account opening. 🎁',
+    m2: 'Let us get started. What is your full name and staff ID?',
+    m3: 'Perfect! Your BVN has been verified and most KYC details pre-filled.\n\nJust upload a passport photo and a utility bill — you will be done in 90 seconds.',
+    btn1: '✅ Start account opening', toast1: 'Salary account enrol flow started.',
+    btn2: '🤔 Tell me more first', toast2: 'Product details sent.',
+    btn3: '❌ Not interested now', toast3: 'Lead marked as low intent. D+7 re-engagement scheduled.'
+  },
+  bnpl: {
+    title: 'BNPL Quick Accept — stats',
+    sent: '—', open: '—', resp: '—', appt: '—', conv: '— (draft)',
+    av: 'U', name: 'UBA Credit',
+    m1: 'Hi! 🎉 Great news — you have been pre-approved for a UBA Quick Loan.\n\n₦500,000 at 1.9%/month\nRepay over 6 months. No collateral. No paperwork.\n\nMoney in your account within 60 seconds of accepting.',
+    m2: 'Do you want to accept this offer?',
+    m3: '✅ Loan accepted!\n\n₦500,000 is being credited to your UBA account now.\n\nFirst repayment: ₦95,000 on June 30, 2026.\n\nYou will receive a reminder 3 days before each due date.',
+    btn1: '✅ Yes, accept loan', toast1: 'Loan accepted! ₦500,000 disbursed in 60 seconds.',
+    btn2: '🔢 Change the amount', toast2: 'Amount adjustment flow started.',
+    btn3: '❌ No thank you', toast3: 'BNPL offer declined. Logged for future re-offer.'
+  },
+  fx: {
+    title: 'FX Travel Activation — stats',
+    sent: '—', open: '—', resp: '—', appt: '—', conv: '— (draft)',
+    av: 'U', name: 'UBA Cards',
+    m1: 'Hi! Planning a trip abroad? 🌍\n\nYour UBA Naira Card is ready for international use — up to $6,000 daily.\n\nShall I activate your card for FX and set up real-time spend alerts?',
+    m2: 'Which countries are you travelling to? I will set up FX rate alerts for those currencies.',
+    m3: 'Your card is now activated for international use. 🎉\n\nYou will receive a WhatsApp alert each time your card is used abroad, and a daily spend summary.',
+    btn1: '✅ Yes, activate for FX', toast1: 'FX activated! Card ready for international use.',
+    btn2: '💱 What is the FX rate today?', toast2: 'Current FX rates sent.',
+    btn3: '❌ Not travelling soon', toast3: 'FX activation deferred. Travel intent noted.'
+  }
+};
+
+function showFlow(id, el) {
+  document.querySelectorAll('.flow-card').forEach(function(f) {
+    f.style.border = '1px solid var(--border)';
+  });
+  el.style.border = '2px solid var(--teal)';
+
+  var f = FLOWS[id];
+  if (!f) return;
+
+  // Stats
+  var t = document.getElementById('flow-stats-title');
+  if (t) t.textContent = f.title;
+  var fields = {
+    'fs-sent': f.sent, 'fs-open': f.open, 'fs-resp': f.resp,
+    'fs-appt': f.appt, 'fs-conv': f.conv
+  };
+  Object.keys(fields).forEach(function(k) {
+    var el2 = document.getElementById(k);
+    if (el2) el2.textContent = fields[k];
+  });
+
+  // WA preview
+  var avEl = document.getElementById('wa-av');
+  var nmEl = document.getElementById('wa-name');
+  var m1El = document.getElementById('wa-m1');
+  var m2El = document.getElementById('wa-m2');
+  var m3El = document.getElementById('wa-m3');
+  if (avEl) avEl.textContent = f.av;
+  if (nmEl) nmEl.textContent = f.name;
+  if (m1El) m1El.textContent = f.m1;
+  if (m2El) m2El.textContent = f.m2;
+  if (m3El) m3El.textContent = f.m3;
+
+  // Update buttons
+  var body = document.getElementById('wa-body');
+  if (!body) return;
+  var btns = body.querySelectorAll('.wa-qr-btn');
+  if (btns[0]) { btns[0].textContent = f.btn1; btns[0].onclick = (function(fn){ return function(){ fn(); }; })(f.fn1 || function(){ showToast(f.toast1); }); }
+  if (btns[1]) { btns[1].textContent = f.btn2; btns[1].onclick = (function(fn){ return function(){ fn(); }; })(f.fn2 || function(){ showToast(f.toast2); }); }
+  if (btns[2]) { btns[2].textContent = f.btn3; btns[2].onclick = (function(fn){ return function(){ fn(); }; })(f.fn3 || function(){ showToast(f.toast3); }); }
+}
+
+
+// ══════════════════════════════════════════════════════════
+// FULL JOURNEY FUNCTIONS — every CTA has a real flow
+// ══════════════════════════════════════════════════════════
+
+// ── Shared modal helpers ───────────────────────────────────
+function openJourneyModal(title, html, onConfirm, confirmLabel, confirmClass) {
+  var m = document.getElementById('modal-journey');
+  if (!m) {
+    m = document.createElement('div');
+    m.id = 'modal-journey';
+    m.className = 'modal-overlay';
+    m.innerHTML = '<div class="modal-box"><div class="modal-head"><div class="modal-title" id="mj-title"></div><button class="modal-close" onclick="closeJourney()">×</button></div><div class="modal-body" id="mj-body"></div><div class="modal-foot" id="mj-foot"></div></div>';
+    m.addEventListener('click', function(e){ if(e.target===m) closeJourney(); });
+    document.body.appendChild(m);
+  }
+  document.getElementById('mj-title').textContent = title;
+  document.getElementById('mj-body').innerHTML = html;
+  var foot = document.getElementById('mj-foot');
+  foot.innerHTML = '';
+  var cancelBtn = document.createElement('button');
+  cancelBtn.className = 'btn btn-outline';
+  cancelBtn.textContent = 'Close';
+  cancelBtn.onclick = closeJourney;
+  foot.appendChild(cancelBtn);
+  if (onConfirm) {
+    var confBtn = document.createElement('button');
+    confBtn.className = 'btn ' + (confirmClass || 'btn-primary');
+    confBtn.textContent = confirmLabel || 'Confirm';
+    confBtn.onclick = function() { closeJourney(); onConfirm(); };
+    foot.appendChild(confBtn);
+  }
+  m.style.display = 'flex';
+}
+function closeJourney() {
+  var m = document.getElementById('modal-journey');
+  if (m) m.style.display = 'none';
+}
+
+function infoRow(label, val, color) {
+  return '<div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--border)">'
+    +'<span style="font-size:12px;color:var(--text-2)">'+label+'</span>'
+    +'<span style="font-size:12px;font-weight:700;color:'+(color||'var(--navy)')+'">'+val+'</span></div>';
+}
+function alertBox(msg, type) {
+  var bg = type==='success' ? 'var(--green-lt)' : type==='warn' ? 'var(--gold-lt)' : 'var(--teal-lt)';
+  var bc = type==='success' ? 'var(--green)' : type==='warn' ? 'var(--gold)' : 'var(--teal)';
+  var tc = type==='success' ? '#065F46' : type==='warn' ? '#92400E' : '#076360';
+  return '<div style="background:'+bg+';border:1px solid '+bc+';border-left:3px solid '+bc+';border-radius:6px;padding:9px 13px;font-size:12px;color:'+tc+';line-height:1.6;margin-bottom:10px">'+msg+'</div>';
+}
+
+// ── LEAD CAPTURE journeys ──────────────────────────────────
+function openLeadProfile(name, campaign, stage, branch) {
+  var avatar = name.split(' ').map(function(n){return n[0];}).join('').slice(0,2);
+  var stageColor = stage==='Converted' ? 'var(--green)' : stage==='Routed' ? 'var(--teal)' : stage==='Pending' ? 'var(--gold)' : 'var(--text-3)';
+  var html = '<div style="display:flex;align-items:center;gap:14px;margin-bottom:18px;padding:14px;background:var(--slate);border-radius:10px">'
+    +'<div style="width:48px;height:48px;border-radius:50%;background:var(--teal);color:#fff;font-size:16px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">'+avatar+'</div>'
+    +'<div><div style="font-size:16px;font-weight:700;color:var(--navy)">'+name+'</div>'
+    +'<div style="font-size:12px;color:var(--text-3);margin-top:2px">Lead · '+campaign+'</div></div>'
+    +'<span class="badge" style="margin-left:auto;background:var(--teal-lt);color:#076360">'+stage+'</span>'
+    +'</div>'
+    + infoRow('Campaign', campaign)
+    + infoRow('Pipeline stage', stage, stageColor)
+    + infoRow('Nearest branch', branch)
+    + infoRow('Lead source', 'WhatsApp tap (ad CTA)')
+    + infoRow('Intent score', stage==='Converted'?'Completed':stage==='Routed'?'High (8.4/10)':'Medium (5.2/10)')
+    + infoRow('Last touchpoint', 'D+0 initial message')
+    +'<div style="margin-top:14px">'
+    +'<div style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text-3);margin-bottom:8px">Quick actions</div>'
+    +'<div style="display:flex;gap:8px;flex-wrap:wrap">'
+    +'<button class="btn btn-primary btn-sm" onclick="closeJourney();openWhatsAppChat(\''+name+'\',\'\')">💬 Open WhatsApp</button>'
+    +'<button class="btn btn-outline btn-sm" onclick="closeJourney();routeLead(\''+name+'\',\''+branch+'\',\''+campaign+'\')">📍 Route to branch</button>'
+    +'<button class="btn btn-outline btn-sm" onclick="closeJourney();sendReminder(\''+name+'\',\''+campaign+'\')">🔔 Send reminder</button>'
+    +'</div></div>';
+  openJourneyModal('Lead Profile — ' + name, html);
+}
+
+function openWhatsAppChat(name, phone) {
+  var avatar = name.split(' ').map(function(n){return n[0];}).join('').slice(0,2);
+  var html = '<div style="background:#E5DDD5;border-radius:12px;overflow:hidden">'
+    +'<div style="background:#075E54;padding:10px 12px;display:flex;align-items:center;gap:9px">'
+    +'<div style="width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff">'+avatar+'</div>'
+    +'<div><div style="font-size:12.5px;font-weight:600;color:#fff">'+name+'</div><div style="font-size:10px;color:rgba(255,255,255,.6)">'+phone+'</div></div>'
+    +'<span style="margin-left:auto;font-size:10px;color:rgba(255,255,255,.5)">● Online</span>'
+    +'</div>'
+    +'<div style="padding:10px 8px;display:flex;flex-direction:column;gap:7px">'
+    +'<div style="background:#fff;border-radius:7px;padding:8px 10px;max-width:85%;box-shadow:0 1px 2px rgba(0,0,0,.08)">'
+    +'<div style="font-size:12px;line-height:1.5;color:#111">Hi '+name.split(' ')[0]+'! 👋 Following up on your interest in the UBA Naira Debit Card.\n\nYour appointment at UBA Victoria Island is confirmed for tomorrow 10am. Your card will be ready.\n\nRemember: collect your card and get ₦500 airtime credited instantly! 🎁</div>'
+    +'<div style="font-size:9px;color:#8696A0;text-align:right;margin-top:3px">09:42 AM ✓✓</div>'
+    +'</div>'
+    +'</div>'
+    +'<div style="padding:8px 10px;background:#F0F0F0;display:flex;gap:7px">'
+    +'<input type="text" id="wa-type-input" placeholder="Type a message..." style="flex:1;border-radius:20px;padding:7px 14px;font-size:12px;border:none;outline:none">'
+    +'<button onclick="sendWAMessage(\''+name+'\')" style="background:#075E54;border:none;border-radius:50%;width:34px;height:34px;color:#fff;cursor:pointer;font-size:14px;flex-shrink:0">➤</button>'
+    +'</div></div>';
+  openJourneyModal('WhatsApp Chat — ' + name, html, null, null, null);
+}
+
+function sendWAMessage(name) {
+  var input = document.getElementById('wa-type-input');
+  var msg = input ? input.value.trim() : 'Follow-up message';
+  closeJourney();
+  showToast('Message sent to ' + name + ': "' + (msg || 'Hello') + '" ✓');
+}
+
+function sendReminder(name, campaign) {
+  var html = alertBox('A personalised reminder will be sent to <strong>'+name+'</strong> via WhatsApp for the <strong>'+campaign+'</strong> campaign.', 'info')
+    + infoRow('Recipient', name)
+    + infoRow('Campaign', campaign)
+    + infoRow('Template', 'D+1 gentle reminder')
+    + infoRow('Reward mention', '₦500 airtime (expires in 48hrs)')
+    + infoRow('Schedule', 'Send immediately');
+  openJourneyModal('Send Reminder — ' + name, html,
+    function(){ showToast('Reminder sent to ' + name + ' via WhatsApp ✓'); },
+    'Send reminder now', 'btn-primary');
+}
+
+function applyFilter(el) {
+  showToast('Filter applied');
+}
+
+function exportLeadsCSV() {
+  var csv = 'Name,Phone,Campaign,Stage,Branch,Intent,Captured\n'
+    +'Chidi Okafor,08012345678,Debit Card,Routed,Victoria Island,High,2026-05-15 09:42\n'
+    +'Ngozi Adeyemi,08023456789,KYC Update,Pending,Wuse II Abuja,Medium,2026-05-15 09:18\n'
+    +'Emeka Eze,08034567890,Dormant,Converted,GRA Port Harcourt,High,2026-05-15 08:55\n'
+    +'Fatima Bello,09011234567,Salary Account,New,Sabon Gari Kano,Low,2026-05-15 08:31\n'
+    +'Tunde Adeyinka,08087654321,Debit Card,Routed,Ikeja Branch,High,2026-05-15 08:14\n';
+  var blob = new Blob([csv], {type:'text/csv'});
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url; a.download = 'IGE_leads_export_2026-05-15.csv';
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a); URL.revokeObjectURL(url);
+  showToast('Leads exported: IGE_leads_export_2026-05-15.csv ✓');
+}
+
+// ── CAMPAIGN journeys ──────────────────────────────────────
+function openCampaignEditor(btn) {
+  var row = btn ? btn.closest('tr') : null;
+  var name = row ? row.querySelector('.tbl-name').textContent : 'Campaign';
+  var html = alertBox('You are editing a <strong>live campaign</strong>. Changes take effect immediately on the next message send.', 'warn')
+    +'<div class="field-group"><label>Campaign name</label><input type="text" value="'+name+'" style="font-weight:600"></div>'
+    +'<div class="field-row"><div class="field-group"><label>Daily send limit</label><input type="number" value="5000"></div><div class="field-group"><label>Pause campaign</label><select><option>Running</option><option>Paused</option><option>Ended</option></select></div></div>'
+    +'<div class="field-group"><label>Reward per conversion (₦)</label><input type="number" value="500"></div>'
+    +'<div class="field-group"><label>Follow-up sequence</label><select><option selected>D+0, D+1, D+3, D+7 (default)</option><option>D+0, D+3 only</option><option>D+0 only (no follow-up)</option></select></div>'
+    +'<div class="field-group"><label>Notification email</label><input type="email" value="campaigns@uba.com.ng"></div>';
+  openJourneyModal('Edit Campaign — ' + name, html,
+    function(){ showToast('Campaign "'+name+'" updated ✓'); },
+    'Save changes', 'btn-primary');
+}
+
+function launchDraftCampaign(btn) {
+  var row = btn ? btn.closest('tr') : null;
+  var name = row ? row.querySelector('.tbl-name').textContent : 'Campaign';
+  var html = alertBox('You are about to <strong>launch "'+name+'"</strong>. This will send WhatsApp messages to the target segment immediately.', 'warn')
+    + infoRow('Campaign', name)
+    + infoRow('Target audience', 'Pre-approved customers')
+    + infoRow('WhatsApp flow', 'Auto-matched')
+    + infoRow('Initial send volume', '5,000 messages / day')
+    + infoRow('Reward budget', '₦2,500,000')
+    + infoRow('Expected conversions', '700–1,200 (est.)');
+  openJourneyModal('Launch Campaign', html,
+    function(){
+      if (row) {
+        var statusCell = row.querySelector('.badge');
+        if (statusCell) { statusCell.textContent = 'Live'; statusCell.className = 'badge b-green'; }
+        var launchBtn = row.querySelector('.btn-primary');
+        if (launchBtn) { launchBtn.textContent = 'Pause'; launchBtn.className = 'btn btn-outline btn-sm'; launchBtn.onclick = function(){ showToast(name+' paused'); }; }
+      }
+      showToast('"'+name+'" is now live! WhatsApp flow deployed ✓');
+    },
+    'Launch now 🚀', 'btn-primary');
+}
+
+function openFlowBuilder() {
+  var html = '<div style="font-size:12.5px;color:var(--text-2);margin-bottom:16px;line-height:1.6">Create a new WhatsApp conversation flow for a banking use case. Each flow is a sequence of messages and quick-reply options that guide customers through a conversion journey.</div>'
+    +'<div class="field-group"><label>Flow name <span style="color:var(--rose)">*</span></label><input type="text" placeholder="e.g. Insurance Cross-Sell — June 2026"></div>'
+    +'<div class="field-row"><div class="field-group"><label>Use case</label><select><option>Dormant Reactivation</option><option>Card Activation</option><option>KYC Update</option><option>BNPL / Credit</option><option>Insurance Cross-Sell</option><option>FX & Travel</option><option>Digital Migration</option><option>Savings Goal</option></select></div>'
+    +'<div class="field-group"><label>Language</label><select><option>English</option><option>Hausa</option><option>Yoruba</option><option>Igbo</option></select></div></div>'
+    +'<div class="field-group"><label>Opening message</label><textarea rows="3" placeholder="Hi [Name]! 👋 This is UBA Nigeria..."></textarea></div>'
+    +'<div class="field-group"><label>Quick reply options (one per line)</label><textarea rows="3" placeholder="✅ Yes, I am interested\n⏰ Remind me tomorrow\n❌ Not interested"></textarea></div>'
+    +'<div class="field-group"><label>Conversion trigger</label><input type="text" placeholder="e.g. Customer taps Yes and completes action"></div>';
+  openJourneyModal('New WhatsApp Flow', html,
+    function(){ showToast('New flow created and ready to deploy ✓'); },
+    'Create flow', 'btn-primary');
+}
+
+// ── WHATSAPP flow quick replies ────────────────────────────
+function waFlowStep(type) {
+  if (type === 'existing') {
+    var html = alertBox('Customer has an existing UBA account. Routing to <strong>card activation flow</strong>.', 'success')
+      + infoRow('Customer', 'Chidi Okafor')
+      + infoRow('Account found', '••• ••• 4821 (Current)')
+      + infoRow('BVN verified', '✓ Yes')
+      + infoRow('Next step', 'Book branch appointment for card collection')
+      + infoRow('Reward on collection', '₦500 airtime');
+    openJourneyModal('Flow: Existing Customer → Card Activation', html,
+      function(){ waBookAppointment(); }, 'Continue to booking →', 'btn-primary');
+  } else {
+    var html2 = alertBox('New customer. Starting <strong>account opening + card issuance</strong> flow.', 'info')
+      + infoRow('Customer', 'New prospect')
+      + infoRow('Required docs', 'NIN / Passport + utility bill')
+      + infoRow('Process', 'Digital KYC + branch visit')
+      + infoRow('Time to complete', '~15 minutes at branch')
+      + infoRow('Welcome reward', '₦1,000 airtime on first deposit');
+    openJourneyModal('Flow: New Customer → Account Opening', html2,
+      function(){ showToast('Account opening WhatsApp flow started for new customer ✓'); },
+      'Start account opening', 'btn-primary');
+  }
+}
+
+function waBookAppointment() {
+  var html = alertBox('Appointment booked successfully at <strong>UBA Victoria Island</strong>. Branch has been pre-briefed with full customer context.', 'success')
+    + infoRow('Customer', 'Chidi Okafor')
+    + infoRow('Branch', 'UBA Victoria Island, 14 Ahmadu Bello Way')
+    + infoRow('Date & time', 'Tomorrow, 10:00 AM')
+    + infoRow('Purpose', 'Debit card collection (pre-staged)')
+    + infoRow('Branch notification', 'Sent ✓')
+    + infoRow('Customer confirmation', 'Sent via WhatsApp ✓')
+    + infoRow('Reward on collection', '₦500 airtime (queued)')
+    +'<div style="margin-top:12px;padding:10px;background:var(--slate);border-radius:8px;font-size:11.5px;color:var(--text-2)">'
+    +'<strong>Follow-up scheduled:</strong> D+1 reminder if no card collected. D+3 urgency message. D+7 final chance. Sequence stops immediately on conversion.</div>';
+  openJourneyModal('Appointment Booked ✓', html);
+}
+
+function waAlternativeSlots() {
+  var html = '<div style="font-size:12px;color:var(--text-2);margin-bottom:12px">Select an alternative appointment slot at <strong>UBA Victoria Island</strong>:</div>'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">'
+    +['Wed 16 May, 9:00 AM','Wed 16 May, 2:00 PM','Thu 17 May, 10:00 AM','Thu 17 May, 3:00 PM','Fri 18 May, 9:00 AM','Sat 19 May, 10:00 AM'].map(function(slot){
+      return '<button onclick="selectSlot(\''+slot+'\')" style="padding:10px;border:1.5px solid var(--border-2);border-radius:8px;background:#fff;cursor:pointer;font-size:12px;font-family:var(--font);color:var(--navy);font-weight:500;transition:all .15s" onmouseover="this.style.borderColor=\'var(--teal)\'" onmouseout="this.style.borderColor=\'var(--border-2)\'">'
+        +'📅 '+slot+'</button>';
+    }).join('')
+    +'</div>';
+  openJourneyModal('Choose Appointment Time', html);
+}
+
+function selectSlot(slot) {
+  closeJourney();
+  showToast('Appointment booked: ' + slot + ' · Branch pre-briefed ✓');
+}
+
+function waWalkIn() {
+  var html = alertBox('Walk-in guidance sent to Chidi Okafor via WhatsApp.', 'success')
+    + infoRow('Message sent', '"Your card is ready at UBA Victoria Island. Just walk in and ask for the IGE counter. No appointment needed."')
+    + infoRow('Branch told to expect walk-in', '✓ Yes')
+    + infoRow('Wait time today', 'Approx. 8 minutes')
+    + infoRow('D+3 reminder if not visited', 'Scheduled');
+  openJourneyModal('Walk-in Guidance Sent', html);
+}
+
+// ── DORMANT REACTIVATION journeys ──────────────────────────
+function launchWinBackAll() {
+  var html = alertBox('You are about to launch a <strong>win-back sequence to 4,218 dormant accounts</strong>. This is irreversible once sent.', 'warn')
+    + infoRow('Total accounts', '4,218')
+    + infoRow('Total deposit value at risk', '₦24.8B')
+    + infoRow('Message type', 'Personalised WhatsApp with customer balance')
+    + infoRow('Incentive', '₦500 airtime per reactivation (auto-credited)')
+    + infoRow('Follow-up sequence', 'D+0, D+1, D+3, D+7 (stops on reactivation)')
+    + infoRow('Estimated reactivation rate', '35–40% (≈ 1,477–1,687 accounts)')
+    + infoRow('Est. revenue recovery', '₦1.2B–₦1.4B')
+    + infoRow('Total reward budget', '₦2,109,000 (max)')
+    + infoRow('IGE success fee (₦500 × 35%)', '₦738,150 (max)');
+  openJourneyModal('Launch Dormant Win-Back Sequence', html,
+    function(){
+      showToast('✓ Win-back sequence launched to 4,218 accounts. First batch sending now.');
+      // Update KPI
+      var kpiEls = document.querySelectorAll('.kpi-val');
+      kpiEls.forEach(function(el){
+        if (el.textContent === '4,218') {
+          el.style.color = 'var(--amber)';
+          el.closest('.kpi').querySelector('.kpi-label').textContent = 'Win-back sequences sent';
+          el.closest('.kpi').querySelector('.kpi-delta').textContent = '↑ First batch sent now';
+        }
+      });
+    },
+    'Launch 4,218 win-backs 🚀', 'btn-danger');
+}
+
+function sendWinBack(name, balance, days) {
+  var html = alertBox('Sending a personalised win-back message to <strong>'+name+'</strong>.', 'info')
+    + infoRow('Customer', name)
+    + infoRow('Account dormant', days + ' days')
+    + infoRow('Balance at risk', balance)
+    + infoRow('Message', '"Hi '+name.split(' ')[0]+'! We have missed you at UBA. Your account has been quiet for '+days+' days — and you have '+balance+' sitting there. Reactivate today for ₦500 airtime instantly."')
+    + infoRow('Incentive', '₦500 airtime (auto-credited on first txn)')
+    + infoRow('Follow-up if no response', 'D+3, D+7 automatic');
+  openJourneyModal('Send Win-Back — ' + name, html,
+    function(){
+      showToast('Win-back message sent to ' + name + ' ✓');
+    },
+    'Send win-back message', 'btn-danger');
+}
+
+function sendFollowUp(name, stage) {
+  var templates = {
+    'D+3': 'Hi '+name.split(' ')[0]+'! ⏰ Just a reminder — your ₦500 airtime reward is still waiting for you. Reactivate your UBA account this week and it is yours. Reply YES to get started.',
+    'D+7 final': 'Hi '+name.split(' ')[0]+'! This is our final reminder. Your ₦500 airtime reward expires in 24 hours. This is your last chance to reactivate and claim it. Reply YES now.'
+  };
+  var html = alertBox('Sending '+stage+' follow-up to <strong>'+name+'</strong>.', 'warn')
+    + infoRow('Customer', name)
+    + infoRow('Follow-up stage', stage)
+    + infoRow('Message preview', templates[stage] || 'Personalised follow-up message')
+    + infoRow('Urgency level', stage==='D+7 final' ? '🔴 High — final message' : '🟡 Medium')
+    + infoRow('If no response after this', stage==='D+7 final' ? 'Customer removed from sequence' : 'D+7 final will follow');
+  openJourneyModal(stage + ' Follow-up — ' + name, html,
+    function(){ showToast(stage + ' sent to ' + name + ' ✓'); },
+    'Send ' + stage, 'btn-outline');
+}
+
+function dormantYes() {
+  var html = alertBox('<strong>Emeka confirmed reactivation!</strong> Sending mobile funding link now.', 'success')
+    + infoRow('Customer', 'Emeka C. Nwosu')
+    + infoRow('Response', '"Yes, I am ready"')
+    + infoRow('Action taken', 'Mobile top-up link sent via WhatsApp')
+    + infoRow('₦500 airtime reward', 'Queued — will credit on first transaction')
+    + infoRow('Follow-up sequence', 'Cancelled — customer engaged')
+    + infoRow('Account status update', 'Pending first transaction');
+  openJourneyModal('Customer Reactivating ✓', html);
+}
+
+function dormantRemind() {
+  var html = alertBox('D+3 reminder scheduled for <strong>Emeka C. Nwosu</strong>.', 'info')
+    + infoRow('Customer', 'Emeka C. Nwosu')
+    + infoRow('Response', '"Remind me in 3 days"')
+    + infoRow('D+3 message scheduled', '3 days from now')
+    + infoRow('D+7 final (if no response)', '7 days from now')
+    + infoRow('Reward still valid', '✓ Yes (expires D+14)');
+  openJourneyModal('Reminder Scheduled', html);
+}
+
+function dormantOptOut() {
+  var html = alertBox('<strong>Emeka C. Nwosu opted out.</strong> Removed from all win-back sequences.', 'warn')
+    + infoRow('Customer', 'Emeka C. Nwosu')
+    + infoRow('Response', '"Not interested"')
+    + infoRow('Action', 'Removed from dormant reactivation sequence')
+    + infoRow('Re-contact window', 'Not before 90 days')
+    + infoRow('Account flag', 'Opt-out logged in CRM');
+  openJourneyModal('Customer Opted Out', html);
+}
+
+// ── BRANCH ROUTING journeys ────────────────────────────────
+function routeLead(name, branch, campaign) {
+  var html = alertBox('Routing <strong>'+name+'</strong> to <strong>'+branch+'</strong> and booking an appointment.', 'info')
+    + infoRow('Customer', name)
+    + infoRow('Campaign', campaign)
+    + infoRow('Assigned branch', branch)
+    + infoRow('Appointment time', 'Tomorrow 10:00 AM (default)')
+    + infoRow('Branch notification', 'Full customer brief will be sent')
+    + infoRow('Customer WhatsApp', 'Appointment confirmation will be sent')
+    + infoRow('Reward on conversion', '₦500 airtime');
+  openJourneyModal('Route Lead — ' + name, html,
+    function(){
+      showToast(name + ' routed to ' + branch + '. Appointment booked. Branch briefed ✓');
+    },
+    'Confirm routing', 'btn-primary');
+}
+
+function autoRouteAll() {
+  var html = alertBox('Auto-routing will assign all <strong>14 unrouted leads</strong> to their nearest branch and book default appointments.', 'warn')
+    + infoRow('Leads to route', '14')
+    + infoRow('Routing method', 'Nearest branch by GPS/LGA')
+    + infoRow('Default appointment', 'Next available slot (within 48hrs)')
+    + infoRow('Branch notifications', '11 branches will be notified')
+    + infoRow('Customer WhatsApp confirmations', '14 messages will be sent')
+    + infoRow('Estimated completion', '< 60 seconds');
+  openJourneyModal('Auto-Route All 14 Leads', html,
+    function(){
+      showToast('14 leads auto-routed. All branches notified. Customer confirmations sent ✓');
+      var badge = document.querySelector('.badge.b-rose');
+      if (badge && badge.textContent === '14 unrouted') {
+        badge.textContent = '0 unrouted';
+        badge.className = 'badge b-green';
+      }
+    },
+    'Auto-route all 14 ⚡', 'btn-primary');
+}
+
+function issueCard(name) {
+  var html = alertBox('Initiating <strong>debit card issuance</strong> for ' + name + '. This will stage the card in the branch system.', 'info')
+    + infoRow('Customer', name)
+    + infoRow('Card type', 'UBA Naira Debit Card (standard)')
+    + infoRow('Account', '••• ••• 4821 (Current)')
+    + infoRow('BVN verification', '✓ Passed')
+    + infoRow('Card delivery', 'Immediate — ready at counter')
+    + infoRow('Activation method', 'Branch PIN set or first POS use');
+  openJourneyModal('Issue Debit Card — ' + name, html,
+    function(){
+      showToast('Card issuance confirmed for ' + name + '. Card ready at counter ✓');
+    },
+    'Issue card ✓', 'btn-primary');
+}
+
+function creditReward(name, reward) {
+  var html = alertBox('<strong>₦500 airtime reward</strong> ready to be credited to ' + name + '.', 'success')
+    + infoRow('Customer', name)
+    + infoRow('Reward', reward)
+    + infoRow('Condition', 'Card collected at branch (confirmed)')
+    + infoRow('Delivery method', 'Direct airtime credit to registered number')
+    + infoRow('Processing time', 'Instant (< 30 seconds)')
+    + infoRow('Cost to bank', '₦500 + ₦7.50 IGE processing fee');
+  openJourneyModal('Credit Reward — ' + name, html,
+    function(){
+      showToast('₦500 airtime credited to ' + name + ' instantly ✓');
+    },
+    'Credit ₦500 reward ✓', 'btn-green');
+}
+
+function markConverted(name) {
+  var html = alertBox('Mark this lead as <strong>successfully converted</strong>. This closes the customer journey and logs the conversion.', 'success')
+    + infoRow('Customer', name)
+    + infoRow('Campaign', 'Debit Card Push — May')
+    + infoRow('Outcome', 'Card issued and collected')
+    + infoRow('Revenue attributed', '₦1,200/mo interchange (projected)')
+    + infoRow('IGE success fee', '₦800 (will be charged)')
+    + infoRow('Follow-up sequence', 'Cancelled — conversion confirmed');
+  openJourneyModal('Mark as Converted — ' + name, html,
+    function(){
+      showToast(name + ' marked as converted. Campaign ROI updated ✓');
+    },
+    'Confirm conversion ✓', 'btn-green');
+}
+
+function markNotConverted(name) {
+  var html = '<div class="field-group"><label>Reason not converted</label><select><option>Customer changed mind</option><option>Wrong branch / too far</option><option>Required docs not available</option><option>Account issue</option><option>Customer will return later</option><option>Other</option></select></div>'
+    +'<div class="field-group"><label>Additional notes</label><textarea rows="2" placeholder="Optional notes..."></textarea></div>'
+    + infoRow('Next action', 'D+3 follow-up WhatsApp will be sent automatically');
+  openJourneyModal('Did Not Convert — ' + name, html,
+    function(){
+      showToast(name + ': Not converted. Reason logged. D+3 follow-up scheduled ✓');
+    },
+    'Log and schedule follow-up', 'btn-outline');
+}
+
+// ── KYC journeys ───────────────────────────────────────────
+function launchKYCSequence() {
+  var html = alertBox('Launching KYC reminder sequence to <strong>35,448 customers</strong> with incomplete KYC. CBN deadline: June 30, 2026.', 'warn')
+    + infoRow('Total pending', '35,448 customers')
+    + infoRow('Compliance deadline', 'June 30, 2026 (46 days)')
+    + infoRow('Fine at risk', '₦240M')
+    + infoRow('Message type', 'Personalised WhatsApp with 3-minute self-service link')
+    + infoRow('Expected digital completion', '70–80% (no branch visit)')
+    + infoRow('Cost vs branch', '₦150 vs ₦6,000 per customer')
+    + infoRow('Est. total saving', '₦206M–₦329M vs branch-only approach')
+    + infoRow('Follow-up sequence', 'D+0, D+3, D+7, D+14 (urgency escalating)');
+  openJourneyModal('Launch KYC Reminder Sequence', html,
+    function(){
+      showToast('✓ KYC sequence launched to 35,448 customers. First batch sending now.');
+    },
+    'Launch KYC sequence 🚀', 'btn-danger');
+}
+
+function sendKYCLink(name, txnVol) {
+  var html = alertBox('Sending KYC self-service WhatsApp to <strong>' + name + '</strong>.', 'info')
+    + infoRow('Customer', name)
+    + infoRow('Monthly transaction volume', txnVol)
+    + infoRow('Current KYC status', 'BVN only — Tier 1')
+    + infoRow('Required upgrade', 'Tier 2 (BVN + photo ID + selfie)')
+    + infoRow('Message', '"Hi! ⚠️ Your UBA account needs a quick KYC update before June 30. It takes 3 minutes here — no branch needed."')
+    + infoRow('Self-service link', 'WhatsApp document upload flow')
+    + infoRow('Reward for completing', '₦150 data bundle');
+  openJourneyModal('Send KYC Link — ' + name, html,
+    function(){
+      showToast('KYC self-service link sent to ' + name + ' ✓');
+    },
+    'Send KYC link', 'btn-danger');
+}
+
+function sendKYCReminder(name, txnVol) {
+  var html = alertBox('Sending KYC reminder to <strong>' + name + '</strong> (Photo ID pending).', 'warn')
+    + infoRow('Customer', name)
+    + infoRow('Monthly transaction volume', txnVol)
+    + infoRow('Current KYC status', 'Photo ID pending — Tier 2 incomplete')
+    + infoRow('Reminder message', '"Hi! Just a reminder — your UBA account KYC update is nearly complete. Just send us your photo ID to finish. It takes 60 seconds."')
+    + infoRow('Account freeze risk', 'High if not completed by June 30');
+  openJourneyModal('KYC Reminder — ' + name, html,
+    function(){
+      showToast('KYC reminder sent to ' + name + ' ✓');
+    },
+    'Send reminder', 'btn-outline');
+}
+
+// ── ANALYTICS journeys ─────────────────────────────────────
+function downloadPDFReport() {
+  showToast('Generating PDF report... this may take a few seconds.');
+  setTimeout(function(){
+    var content = 'IGE Banking Platform - ROI Report\nUnited Bank for Africa\nMay 2026\n\n'
+      +'EXECUTIVE SUMMARY\n'
+      +'Total leads generated: 48,292\n'
+      +'Conversions: 9,641 (19.9%)\n'
+      +'Gross value delivered: ₦5,507,000,000\n'
+      +'IGE platform cost: ₦142,000,000\n'
+      +'Net value to UBA: ₦5,365,000,000\n'
+      +'ROI: 35.4:1\n\n'
+      +'BY USE CASE\n'
+      +'Dormant Reactivation: 18,400 leads, 38.1% conv, ₦4.8B value\n'
+      +'KYC Compliance: 91,200 leads, 61.2% conv, ₦575M value\n'
+      +'Debit Card Activation: 22,100 leads, 22.4% conv, ₦48M value\n'
+      +'Salary Account Acquisition: 5,840 leads, 14.7% conv, ₦84M value\n';
+    var blob = new Blob([content], {type:'text/plain'});
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url; a.download = 'IGE_UBA_ROI_Report_May2026.txt';
+    document.body.appendChild(a); a.click();
+    document.body.removeChild(a); URL.revokeObjectURL(url);
+    showToast('IGE_UBA_ROI_Report_May2026.txt downloaded ✓');
+  }, 1200);
+}
+
+function shareReportCFO() {
+  var html = alertBox('Share this month\'s ROI report with UBA\'s CFO team.', 'info')
+    +'<div class="field-group"><label>Recipients</label><input type="email" value="cfo@uba.com.ng" placeholder="Email addresses"></div>'
+    +'<div class="field-group"><label>CC</label><input type="email" placeholder="Optional CC..." value="campaigns@uba.com.ng"></div>'
+    +'<div class="field-group"><label>Subject</label><input type="text" value="IGE Platform ROI Report — May 2026 (35.4:1 ROI, ₦5.03B net value)"></div>'
+    +'<div class="field-group"><label>Message</label><textarea rows="3">Please find attached the IGE Banking Platform ROI report for May 2026. Key highlight: ₦5.03B net value delivered on ₦142M platform cost (35.4:1 ROI).</textarea></div>';
+  openJourneyModal('Share Report to CFO', html,
+    function(){ showToast('Report shared to CFO team ✓'); },
+    'Send report', 'btn-primary');
+}
+
+// ── SEGMENTS journeys ──────────────────────────────────────
+function openAPIConnect() {
+  var html = '<div style="font-size:12.5px;color:var(--text-2);margin-bottom:14px;line-height:1.6">Connect IGE to your core banking system to enable real-time customer data sync and automated segmentation.</div>'
+    +'<div class="field-group"><label>Core banking system</label><select><option>Temenos T24</option><option>Finacle (Infosys)</option><option>Flexcube (Oracle)</option><option>BankWorld</option><option>Custom REST API</option></select></div>'
+    +'<div class="field-group"><label>API endpoint URL</label><input type="text" placeholder="https://api.uba.com.ng/v1/customers"></div>'
+    +'<div class="field-group"><label>API key</label><input type="password" placeholder="Enter API key..."></div>'
+    +'<div class="field-row"><div class="field-group"><label>Sync frequency</label><select><option>Daily (midnight)</option><option>Every 6 hours</option><option>Real-time webhook</option></select></div>'
+    +'<div class="field-group"><label>Data scope</label><select><option>All active accounts</option><option>Dormant accounts only</option><option>KYC-pending only</option></select></div></div>'
+    + alertBox('All API connections are encrypted (TLS 1.3). No raw customer data is stored on IGE servers.', 'info');
+  openJourneyModal('Connect Core Banking API', html,
+    function(){ showToast('API connection tested successfully. Sync scheduled ✓'); },
+    'Test & connect', 'btn-primary');
+}
+
+function openCSVUpload() {
+  var html = '<div style="border:2px dashed var(--border-2);border-radius:10px;padding:24px;text-align:center;margin-bottom:14px;cursor:pointer" onclick="openFileUpload()" onmouseover="this.style.borderColor=\'var(--teal)\'" onmouseout="this.style.borderColor=\'var(--border-2)\'">'
+    +'<div style="font-size:32px;margin-bottom:8px">📁</div>'
+    +'<div style="font-size:13.5px;font-weight:600;color:var(--navy);margin-bottom:4px">Drop your transaction CSV here</div>'
+    +'<div style="font-size:11.5px;color:var(--text-3)">.csv or .xlsx · max 50MB · up to 500,000 rows</div>'
+    +'</div>'
+    +'<div style="background:var(--slate);border-radius:8px;padding:10px 12px;font-size:11.5px;color:var(--text-2)">'
+    +'<strong>Required columns:</strong> <span style="background:var(--teal-lt);color:#076360;padding:1px 6px;border-radius:4px;font-weight:600">account_id</span> '
+    +'<span style="background:var(--teal-lt);color:#076360;padding:1px 6px;border-radius:4px;font-weight:600">transaction_date</span> '
+    +'<span style="background:var(--teal-lt);color:#076360;padding:1px 6px;border-radius:4px;font-weight:600">amount</span> '
+    +'<span style="background:var(--teal-lt);color:#076360;padding:1px 6px;border-radius:4px;font-weight:600">transaction_type</span>'
+    +'</div>';
+  openJourneyModal('Upload Transaction Data', html,
+    function(){ showToast('File uploaded. AI segmentation starting... (~2 min) ✓'); },
+    'Upload & run segmentation', 'btn-primary');
+}
+
+// ── EXPORT / UPGRADE / MISC ────────────────────────────────
+function exportReport() {
+  showToast('Dashboard report exporting...');
+  setTimeout(function(){ showToast('IGE_Dashboard_May2026.xlsx downloaded ✓'); }, 1000);
+}
+
+function openWalletTopup() {
+  var html = alertBox('Your reward wallet has <strong>₦2.4M remaining</strong>. At current disbursement rate (~₦600K/day) this will be exhausted in 4 days.', 'warn')
+    + infoRow('Current balance', '₦2,400,000')
+    + infoRow('Daily disbursement rate', '~₦600,000')
+    + infoRow('Days remaining', '4 days')
+    +'<div class="field-group" style="margin-top:14px"><label>Top-up amount (₦)</label><select><option value="5000000">₦5,000,000</option><option value="10000000">₦10,000,000</option><option value="20000000">₦20,000,000</option><option value="50000000">₦50,000,000 (30-day float)</option></select></div>'
+    +'<div class="field-group"><label>Payment method</label><select><option>UBA Corporate Account (auto-debit)</option><option>Bank transfer</option><option>Paystack</option></select></div>';
+  openJourneyModal('Top Up Reward Wallet', html,
+    function(){ showToast('Wallet top-up of ₦5,000,000 initiated ✓'); },
+    'Confirm top-up', 'btn-gold');
+}
+
+function openUpgrade() {
+  var html = '<div style="text-align:center;padding:12px 0 16px">'
+    +'<div style="font-size:40px;margin-bottom:8px">🚀</div>'
+    +'<div style="font-size:16px;font-weight:700;color:var(--navy);margin-bottom:6px">Upgrade to IGE Enterprise+</div>'
+    +'<div style="font-size:12.5px;color:var(--text-2);line-height:1.6;max-width:380px;margin:0 auto">Unlock AI-powered churn prediction, real-time webhooks, multi-bank white-label, advanced analytics, and priority support.</div>'
+    +'</div>'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px">'
+    +['AI churn prediction','Real-time webhooks','White-label branding','All 14 use cases','Priority support 24/7','Multi-institution dashboard','API rate limit 50K/min','Custom segment rules'].map(function(f){
+      return '<div style="display:flex;align-items:center;gap:7px;font-size:12px;color:var(--text-2)"><span style="color:var(--green);font-weight:700">✓</span>'+f+'</div>';
+    }).join('')
+    +'</div>'
+    + infoRow('Enterprise+ pricing', '₦18M/month')
+    + infoRow('Current plan (Enterprise)', '₦12M/month')
+    + infoRow('Upgrade difference', '+₦6M/month');
+  openJourneyModal('Upgrade to Enterprise+', html,
+    function(){ showToast('Upgrade request sent. IGE account manager will contact you within 24hrs ✓'); },
+    'Request upgrade', 'btn-primary');
+}
+
+function saveCampaignDraft() {
+  document.getElementById('modal-campaign').style.display = 'none';
+  showToast('Campaign saved as draft ✓');
+}
+
+function launchNewCampaign() {
+  var nameInput = document.querySelector('#modal-campaign input[type=text]');
+  var name = nameInput ? nameInput.value || 'New Campaign' : 'New Campaign';
+  document.getElementById('modal-campaign').style.display = 'none';
+  showToast('"' + name + '" launched! WhatsApp flow is now live ✓');
+}
+
+function saveAndRouteLead() {
+  document.getElementById('modal-lead').style.display = 'none';
+  var nameInputs = document.querySelectorAll('#modal-lead input[type=text]');
+  var first = nameInputs[0] ? nameInputs[0].value : 'Customer';
+  var last  = nameInputs[1] ? nameInputs[1].value : '';
+  var name  = (first + ' ' + last).trim() || 'New customer';
+  showToast('Lead "' + name + '" saved. Routing to nearest branch... ✓');
+}
+
+function issueReward(name, reward) {
+  var html = alertBox('<strong>' + reward + '</strong> will be credited to ' + name + ' instantly.', 'success')
+    + infoRow('Customer', name)
+    + infoRow('Reward', reward)
+    + infoRow('Trigger', 'Conversion confirmed')
+    + infoRow('Delivery', 'Direct credit to registered mobile number')
+    + infoRow('Processing time', '< 30 seconds');
+  openJourneyModal('Issue Reward — ' + name, html,
+    function(){ showToast(reward + ' issued to ' + name + ' ✓'); },
+    'Issue reward', 'btn-green');
+}
+
+
+// ── Init ──────────────────────────────────────────────────
+buildSidebars();
+go('dashboard');
+
+// ── Tab switcher for Outreach Flows ──────────────────────
+function switchFlowTab(tab) {
+  var wp = document.getElementById('pane-wa');
+  var ep = document.getElementById('pane-email');
+  var tw = document.getElementById('ptab-wa');
+  var te = document.getElementById('ptab-email');
+  var activeStyle   = 'background:#fff;border-bottom:2px solid var(--teal);color:var(--navy)';
+  var inactiveStyle = 'background:transparent;border-bottom:2px solid transparent;color:var(--text-3)';
+  if (tab === 'wa') {
+    if (wp) wp.style.display = '';
+    if (ep) ep.style.display = 'none';
+    if (tw) tw.style.cssText += ';'+activeStyle;
+    if (te) te.style.cssText += ';'+inactiveStyle;
+  } else {
+    if (wp) wp.style.display = 'none';
+    if (ep) ep.style.display = '';
+    if (te) te.style.cssText += ';'+activeStyle;
+    if (tw) tw.style.cssText += ';'+inactiveStyle;
+  }
+}
+
+// ── Email content per flow type ───────────────────────────
+var EMAIL_FLOWS = {
+  debit: {
+    from:'UBA Cards',
+    subject:'Get your UBA Naira Debit Card \u2014 spend $6,000 daily',
+    p1:'We noticed you are interested in the <strong>UBA Naira Debit Card</strong>. With your card you can spend up to <strong>$6,000 daily</strong> on international transactions.',
+    p2:'Getting your card takes just <strong>10 minutes at your nearest branch</strong>. Book below and get <strong>&#8358;500 airtime</strong> credited the moment you collect it.',
+    cta:'Book my appointment \u2192', open:'28.4%', click:'8.2%', conv:'4.1%', sent:'22,100'
+  },
+  dormant: {
+    from:'UBA Nigeria',
+    subject:'Your UBA account misses you \u2014 &#8358;500 airtime inside',
+    p1:'We have missed you! Your UBA account has been inactive for a while, and you have significant funds that could be working harder for you.',
+    p2:'Reactivate your account this week and we will credit <strong>&#8358;500 airtime</strong> directly to your number. No branch visit needed.',
+    cta:'Reactivate my account \u2192', open:'31.2%', click:'9.8%', conv:'7.4%', sent:'18,400'
+  },
+  kyc: {
+    from:'UBA Compliance',
+    subject:'Action required: Update your UBA KYC before June 30',
+    p1:'Your UBA account requires a <strong>KYC update</strong> before <strong>June 30, 2026</strong> to avoid service restrictions.',
+    p2:'It takes just <strong>3 minutes</strong> \u2014 no branch visit. Upload your ID and take a quick selfie right from this link.',
+    cta:'Update my KYC now \u2192', open:'72.1%', click:'48.4%', conv:'61.2%', sent:'91,200'
+  },
+  salary: {
+    from:'UBA Nigeria',
+    subject:'Your employer activated your UBA Salary Account \u2014 claim &#8358;2,000',
+    p1:'Your employer has partnered with UBA for payroll. <strong>Opening your salary account</strong> takes 4 minutes online.',
+    p2:'Claim your <strong>&#8358;2,000 welcome bonus</strong> by opening your account through this link. Salary alerts and free transfers included.',
+    cta:'Open my salary account \u2192', open:'44.2%', click:'22.1%', conv:'14.7%', sent:'5,840'
+  },
+  bnpl: {
+    from:'UBA Credit',
+    subject:'You are pre-approved for a &#8358;500,000 UBA loan',
+    p1:'Great news! You have been <strong>pre-approved</strong> for a UBA Quick Loan of up to <strong>&#8358;500,000</strong> at just 1.9%/month. No collateral. No paperwork.',
+    p2:'Money can be in your account within <strong>60 seconds</strong> of accepting. This offer expires in 72 hours.',
+    cta:'Accept my loan offer \u2192', open:'38.8%', click:'18.4%', conv:'11.2%', sent:'\u2014'
+  },
+  fx: {
+    from:'UBA Cards',
+    subject:'Activate your UBA card for $6,000 daily FX',
+    p1:'Planning a trip? Your <strong>UBA Naira Card</strong> is ready for international use \u2014 spend up to <strong>$6,000 daily</strong> on travel, dining and shopping.',
+    p2:'Click below to activate FX on your card and receive real-time spend alerts for every transaction abroad.',
+    cta:'Activate FX on my card \u2192', open:'22.4%', click:'11.2%', conv:'6.8%', sent:'\u2014'
+  }
+};
+
+// ── Wrap showFlow to also update email pane ───────────────
+(function(){
+  var _orig = (typeof showFlow === 'function') ? showFlow : function(){};
+  showFlow = function(id, el) {
+    _orig(id, el);
+    var ef = EMAIL_FLOWS[id];
+    if (!ef) return;
+    function set(elId, val, html) {
+      var node = document.getElementById(elId);
+      if (!node) return;
+      if (html) node.innerHTML = val; else node.textContent = val;
+    }
+    set('ef-from',    ef.from);
+    set('ef-subject', ef.subject);
+    set('ef-p1',      ef.p1, true);
+    set('ef-p2',      ef.p2, true);
+    set('ef-cta',     ef.cta);
+    set('ef-open',    ef.open);
+    set('ef-click',   ef.click);
+    set('ef-conv',    ef.conv);
+    set('ef-sent',    ef.sent);
+  };
+})();
+
+
+// ═══════════════════════════════════════════════════════════
+// REMAINING JOURNEY FUNCTIONS
+// ═══════════════════════════════════════════════════════════
+
+// ── Email CTA → branch booking journey ───────────────────
+function emailCTABook() {
+  var html = alertBox('Customer clicked the email CTA. This deep-link opens the branch appointment booking flow.', 'success')
+    + infoRow('Action', 'Book branch appointment for card collection')
+    + infoRow('Customer', 'Chidi Okafor')
+    + infoRow('Tracking', 'Email click logged · IGE attribution active · campaign: Debit Card Push')
+    + infoRow('Deep-link', 'ige.uba.ng/book?ref=email&lead=L001&cmp=card-may&ch=email')
+    + infoRow('Next step', 'Customer fills slot picker → branch pre-briefed → ₦500 reward queued')
+    + '<div style="margin-top:12px">'
+    + '<div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text-3);margin-bottom:8px">Select appointment slot</div>'
+    + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:7px" id="slot-grid">'
+    + ['Wed 21 May · 9:00 AM','Wed 21 May · 2:00 PM','Thu 22 May · 10:00 AM','Thu 22 May · 3:00 PM','Fri 23 May · 9:00 AM','Sat 24 May · 10:00 AM'].map(function(s) {
+        return '<button onclick="bookEmailSlot(\''+s+'\')" style="padding:9px;border:1.5px solid var(--border-2);border-radius:7px;background:#fff;cursor:pointer;font-size:11.5px;font-family:var(--font);color:var(--navy);font-weight:500;transition:all .15s" onmouseover="this.style.borderColor=\'var(--teal)\'" onmouseout="this.style.borderColor=\'var(--border-2)\'">📅 '+s+'</button>';
+      }).join('')
+    + '</div></div>';
+  openJourneyModal('Email CTA — Branch Booking', html);
+}
+
+function bookEmailSlot(slot) {
+  closeJourney();
+  showToast('✓ Appointment booked: ' + slot + ' · UBA Victoria Island · Branch briefed · ₦500 reward queued');
+}
+
+// ── Switch institution modal ──────────────────────────────
+function switchInstitution() {
+  var banks = [
+    { name:'United Bank for Africa',  tier:'Enterprise · 32M customers',   active:true  },
+    { name:'Guaranty Trust Bank',     tier:'Enterprise · 28M customers',   active:false },
+    { name:'Access Bank',             tier:'Enterprise · 42M customers',   active:false },
+    { name:'First Bank of Nigeria',   tier:'Growth · 18M customers',       active:false },
+    { name:'Zenith Bank',             tier:'Enterprise · 24M customers',   active:false },
+    { name:'Stanbic IBTC Bank',       tier:'Growth · 6M customers',        active:false },
+  ];
+  var html = '<div style="font-size:12px;color:var(--text-3);margin-bottom:12px">Switch the active institution. All dashboard data, campaigns, and leads will update to reflect the selected bank.</div>'
+    + '<div style="display:flex;flex-direction:column;gap:7px">'
+    + banks.map(function(b) {
+        return '<div onclick="selectInstitution(\''+b.name+'\')" style="display:flex;align-items:center;gap:12px;padding:11px 14px;border:1.5px solid '+(b.active?'var(--teal)':'var(--border-2)')+';border-radius:var(--r-lg);cursor:pointer;background:'+(b.active?'var(--teal-lt)':'#fff')+';transition:all .15s" onmouseover="if(!this.dataset.active)this.style.borderColor=\'var(--border)\';"  data-active="'+b.active+'">'
+          + '<div style="width:36px;height:36px;border-radius:8px;background:var(--navy);display:flex;align-items:center;justify-content:center;color:#fff;font-size:10px;font-weight:800;flex-shrink:0">'+b.name.split(' ').map(function(w){return w[0];}).join('').slice(0,3)+'</div>'
+          + '<div style="flex:1"><div style="font-size:13px;font-weight:600;color:var(--navy)">'+b.name+'</div><div style="font-size:10.5px;color:var(--text-3);margin-top:1px">'+b.tier+'</div></div>'
+          + (b.active ? '<span style="font-size:10px;font-weight:700;background:var(--teal);color:#fff;padding:2px 9px;border-radius:10px">Active</span>' : '')
+          + '</div>';
+      }).join('')
+    + '</div>'
+    + '<div style="margin-top:12px;font-size:11px;color:var(--text-3)">+ <a href="#" onclick="showToast(\'Contact sales to add a new institution\');return false;" style="color:var(--teal)">Add new institution</a></div>';
+  openJourneyModal('Switch Institution', html, null, null, null);
+}
+
+function selectInstitution(name) {
+  closeJourney();
+  // Update bank pill in all sidebars
+  document.querySelectorAll('.sb-bank-name').forEach(function(el){ el.textContent = name; });
+  showToast('✓ Switched to ' + name + ' · Dashboard reloading...');
+  setTimeout(function(){ showToast(name + ' data loaded · 32M customer records synced'); }, 1200);
+}
+
+// ── File upload journey (CSV/data upload) ─────────────────
+function openFileUpload() {
+  var html = '<div style="border:2px dashed var(--border-2);border-radius:10px;padding:28px;text-align:center;margin-bottom:14px;cursor:pointer;transition:border-color .15s" onclick="simulateFileSelect()" onmouseover="this.style.borderColor=\'var(--teal)\'" onmouseout="this.style.borderColor=\'var(--border-2)\'">'
+    + '<div style="font-size:36px;margin-bottom:8px">📁</div>'
+    + '<div style="font-size:13.5px;font-weight:600;color:var(--navy);margin-bottom:4px">Drop your transaction CSV here</div>'
+    + '<div style="font-size:11.5px;color:var(--text-3);margin-bottom:10px">.csv or .xlsx · max 50MB · up to 500,000 rows</div>'
+    + '<button onclick="simulateFileSelect();event.stopPropagation()" class="btn btn-outline btn-sm">Browse files</button>'
+    + '</div>'
+    + '<div style="background:var(--slate);border-radius:var(--r);padding:10px 13px;font-size:11.5px;color:var(--text-2);margin-bottom:12px">'
+    + '<strong>Required columns:</strong> '
+    + ['account_id','transaction_date','amount','transaction_type'].map(function(col){
+        return '<span style="background:var(--teal-lt);color:#076360;padding:1px 7px;border-radius:4px;font-weight:600;margin-right:4px">'+col+'</span>';
+      }).join('')
+    + '</div>'
+    + '<div id="upload-status" style="display:none;background:var(--green-lt);border:1px solid var(--green);border-radius:var(--r);padding:9px 13px;font-size:12px;color:#065F46"></div>';
+  openJourneyModal('Upload Transaction Data', html,
+    function() {
+      showToast('✓ File uploaded · AI segmentation running (~2 min) · Results will appear in Customer Segments');
+    },
+    'Upload & run AI segmentation', 'btn-primary');
+}
+
+function simulateFileSelect() {
+  var status = document.getElementById('upload-status');
+  if (!status) return;
+  status.style.display = 'block';
+  status.innerHTML = '✓ <strong>sample_transactions_Q2.csv</strong> selected · 24,841 rows · 3.2 MB · Ready to upload';
+  showToast('File selected: sample_transactions_Q2.csv');
+}
+
+// ── openEmailCompose — compose + preview email for any customer ──
+function openEmailCompose(name) {
+  var first = (name || 'Customer').split(' ')[0];
+  var flows = {
+    debit:   'Debit Card Activation',
+    dormant: 'Dormant Reactivation',
+    kyc:     'KYC Compliance Update',
+    salary:  'Salary Account Opening',
+    bnpl:    'BNPL Pre-Approved Offer',
+    fx:      'FX & Travel Activation'
+  };
+  var flowKeys = Object.keys(flows);
+
+  function getEmailHTML(flowId) {
+    var ef = (typeof EMAIL_FLOWS !== 'undefined' && EMAIL_FLOWS[flowId]) || {
+      subject: 'Action required from UBA Nigeria',
+      p1: 'We have an exclusive offer for you as part of our ' + flows[flowId] + ' programme.',
+      p2: 'Complete your action today and receive <strong>&#8358;500 airtime</strong> credited instantly.',
+      cta: 'Get started \u2192'
+    };
+    return '<div style="border:1px solid var(--border);border-radius:8px;overflow:hidden;font-family:Arial,sans-serif;font-size:12px">'
+      + '<div style="background:#05192D;padding:10px 14px;color:#fff;font-size:12px"><strong>UBA Nigeria</strong> &lt;campaigns@uba.ng&gt;</div>'
+      + '<div style="background:var(--slate);padding:7px 14px;font-size:12px;font-weight:700;color:var(--navy)">'+ef.subject+'</div>'
+      + '<div style="background:#fff;padding:13px 15px">'
+      + '<p style="font-size:12.5px;font-weight:600;color:#05192D;margin-bottom:7px">Hi '+first+',</p>'
+      + '<p style="font-size:12px;color:#555;line-height:1.7;margin-bottom:7px">'+ef.p1+'</p>'
+      + '<p style="font-size:12px;color:#555;line-height:1.7;margin-bottom:11px">'+ef.p2+'</p>'
+      + '<div style="text-align:center"><button style="background:#0EA5A0;color:#fff;padding:9px 22px;border-radius:6px;font-size:12px;font-weight:700;border:none;cursor:pointer">'+ef.cta+'</button></div>'
+      + '<p style="font-size:10px;color:#999;text-align:center;margin-top:10px">UBA Nigeria &middot; T&amp;Cs apply &middot; Unsubscribe</p>'
+      + '</div></div>';
+  }
+
+  var html = '<div class="field-group"><label>Campaign template</label>'
+    + '<select id="ec-flow" onchange="document.getElementById(\'ec-prev\').innerHTML=getEmailPreviewFor(this.value,\''+first+'\')">'
+    + flowKeys.map(function(k){ return '<option value="'+k+'">'+flows[k]+'</option>'; }).join('')
+    + '</select></div>'
+    + '<div class="field-group"><label>Reward / incentive</label>'
+    + '<input type="text" id="ec-reward" value="&#8358;500 airtime on completion"></div>'
+    + '<div style="margin-bottom:12px" id="ec-prev">'+getEmailHTML('debit')+'</div>'
+    + '<div style="display:flex;gap:8px">'
+    + '<div style="flex:1;text-align:center;padding:7px;background:var(--slate);border-radius:6px"><div style="font-size:10px;color:var(--text-3)">Open rate</div><div style="font-weight:700;color:var(--teal)" id="ec-open">28.4%</div></div>'
+    + '<div style="flex:1;text-align:center;padding:7px;background:var(--slate);border-radius:6px"><div style="font-size:10px;color:var(--text-3)">Click rate</div><div style="font-weight:700;color:var(--teal)" id="ec-click">8.2%</div></div>'
+    + '<div style="flex:1;text-align:center;padding:7px;background:var(--slate);border-radius:6px"><div style="font-size:10px;color:var(--text-3)">Conv rate</div><div style="font-weight:700;color:var(--green)" id="ec-conv">4.1%</div></div>'
+    + '</div>';
+
+  // Store for use in onchange
+  window._getEmailPreviewFor = function(flowId, fname) {
+    return getEmailHTML(flowId);
+  };
+
+  openJourneyModal('Send Email — ' + name, html,
+    function() {
+      var sel = document.getElementById('ec-flow');
+      var flowName = sel ? sel.options[sel.selectedIndex].text : 'campaign';
+      showToast('Email queued for ' + name + ' · Template: ' + flowName + ' · Will deliver to registered email');
+    },
+    'Send email &#8594;', 'btn-primary');
+}
+
+// Expose for inline onchange
+function getEmailPreviewFor(flowId, firstName) {
+  var efData = (typeof EMAIL_FLOWS !== 'undefined') ? EMAIL_FLOWS[flowId] : null;
+  var ef = efData || { subject: 'UBA Nigeria — Action required', p1: 'We have an exclusive offer for you.', p2: 'Act now to claim your reward.', cta: 'Get started' };
+  var s = ['28.4%','31.2%','72.1%','44.2%','38.8%','22.4%'];
+  var cl = ['8.2%','9.8%','48.4%','22.1%','18.4%','11.2%'];
+  var cv = ['4.1%','7.4%','61.2%','14.7%','11.2%','6.8%'];
+  var i = ['debit','dormant','kyc','salary','bnpl','fx'].indexOf(flowId);
+  var openEl = document.getElementById('ec-open');
+  var clickEl = document.getElementById('ec-click');
+  var convEl = document.getElementById('ec-conv');
+  if (openEl) openEl.textContent = s[i] || s[0];
+  if (clickEl) clickEl.textContent = cl[i] || cl[0];
+  if (convEl) convEl.textContent = cv[i] || cv[0];
+  return '<div style="border:1px solid var(--border);border-radius:8px;overflow:hidden;font-family:Arial,sans-serif;font-size:12px">'
+    + '<div style="background:#05192D;padding:10px 14px;color:#fff"><strong>UBA Nigeria</strong> &lt;campaigns@uba.ng&gt;</div>'
+    + '<div style="background:var(--slate);padding:7px 14px;font-weight:700;color:var(--navy)">'+ef.subject+'</div>'
+    + '<div style="background:#fff;padding:13px 15px">'
+    + '<p style="font-weight:600;color:#05192D;margin-bottom:7px">Hi there,</p>'
+    + '<p style="color:#555;line-height:1.7;margin-bottom:7px">'+ef.p1+'</p>'
+    + '<p style="color:#555;line-height:1.7;margin-bottom:11px">'+ef.p2+'</p>'
+    + '<div style="text-align:center"><button style="background:#0EA5A0;color:#fff;padding:9px 22px;border-radius:6px;font-weight:700;border:none;cursor:pointer">'+ef.cta+'</button></div>'
+    + '<p style="font-size:10px;color:#999;text-align:center;margin-top:10px">UBA Nigeria &middot; T&amp;Cs apply</p>'
+    + '</div></div>';
+}
+
+// ── Email buttons on dormant/KYC table rows ───────────────
+// These call openEmailCompose which is now defined above
+// Wire the 📧 Email buttons in dormant and KYC tables
+// (Already in HTML from previous build — now the function exists)
+
+</script>
+<script src="ige-api.js"></script>
+</body>
+</html>
+    fn1: function(){ waFlowStep('existing'); },
+    fn2: function(){ waFlowStep('new'); },
+    fn3: function(){ waWalkIn(); }
+    fn1: function(){ dormantYes(); },
+    fn2: function(){ dormantRemind(); },
+    fn3: function(){ dormantOptOut(); }
+    fn1: function(){ sendKYCLink('Customer Pending','unknown'); },
+    fn2: function(){ sendReminder('Customer','KYC'); },
+    fn3: function(){ showToast('KYC support agent notified'); }
+    fn1: function(){ showToast('Salary account opening flow started ✓'); },
+    fn2: function(){ showToast('Product details sent ✓'); },
+    fn3: function(){ showToast('Low intent logged'); }
+    fn1: function(){ showToast('Loan accepted! ₦500,000 disbursed ✓'); },
+    fn2: function(){ showToast('Amount adjustment started'); },
+    fn3: function(){ showToast('BNPL declined. Logged.'); }
+    fn1: function(){ showToast('FX activated! Card ready for international use ✓'); },
+    fn2: function(){ showToast('FX rates sent ✓'); },
+    fn3: function(){ showToast('Travel intent noted.'); }
